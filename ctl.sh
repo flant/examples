@@ -122,6 +122,9 @@ function upgrade {
   sed -i -e "s%##OAUTH2_PROXY_CLIENT_SECRET##%$OAUTH2_PROXY_CLIENT_SECRET%g" manifests/kube-dashboard-oauth2-proxy.yaml
   sed -i -e "s%##OAUTH2_PROXY_COOKIE_SECRET##%$OAUTH2_PROXY_COOKIE_SECRET%g" manifests/kube-dashboard-oauth2-proxy.yaml
   sed -i -e "s%##DASHBORD_URL##%$DASHBORD_URL%g" manifests/kube-dashboard-ingress.yaml
+  kubectl delete clusterrolebinding kubernetes-dashboard ||true
+  kubectl delete svc oauth2-proxy -n kube-system ||true
+  kubectl delete svc kubernetes-dashboard -n kube-system ||true
   kubectl apply -Rf manifests/
 }
 
