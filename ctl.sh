@@ -9,12 +9,12 @@ Mandatory arguments:
   -i, --install                install into 'kube-nginx-ingress' namespace
   -u, --upgrade                upgrade existing installation, will reuse password and host names
   -d, --delete                 remove everything, including the namespace
-Optional arguments:
-  -h, --help                   output this message
       --gitlab-url             set gitlab url with schema (https://gitlab.example.com)
       --oauth2-id              set OAUTH2_PROXY_CLIENT_ID from gitlab
       --oauth2-secret          set OAUTH2_PROXY_CLIENT_SECRET from gitlab
       --dashboard-url          set dashboard url without schema (dashboard.example.com)
+Optional arguments:
+  -h, --help                   output this message
 EOF
 
 RANDOM_NUMBER=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
