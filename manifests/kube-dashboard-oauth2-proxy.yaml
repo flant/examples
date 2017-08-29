@@ -37,6 +37,16 @@ spec:
         image: docker.io/colemickens/oauth2_proxy:latest
         imagePullPolicy: Always
         name: oauth2-proxy
+        readinessProbe:
+          tcpSocket:
+            port: 4180
+          initialDelaySeconds: 1
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 4180
+          initialDelaySeconds: 15
+          periodSeconds: 10
         resources:
           requests:
             cpu: "100m"
