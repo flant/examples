@@ -21,6 +21,6 @@ Optional arguments:
 ```
 ссылки на документацию:
 
-* https://github.com/bitly/oauth2_proxy#gitlab-auth-provider
+* https://github.com/colemickens/oauth2_proxy/blob/master/README.md#gitlab-auth-provider
 * https://docs.gitlab.com/ce/integration/oauth_provider.html
 * https://github.com/kubernetes/ingress/tree/master/examples/external-auth/nginx

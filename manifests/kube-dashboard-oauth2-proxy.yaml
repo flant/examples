@@ -37,6 +37,10 @@ spec:
         image: docker.io/colemickens/oauth2_proxy:latest
         imagePullPolicy: Always
         name: oauth2-proxy
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
         ports:
         - containerPort: 4180
           protocol: TCP

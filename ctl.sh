@@ -80,7 +80,7 @@ type jq >/dev/null 2>&1 || { echo >&2 "I require jq but it's not installed.  Abo
 
 mkdir -p "$TMP_DIR"
 cd "$TMP_DIR"
-git clone --depth 1 https://github.com/AndrewKoryakin/kubernetes-dashboard.git
+git clone --depth 1 https://github.com/flant/kubernetes-dashboard.git
 cd "$WORKDIR"
 
 LOGIN_URL="${GITLAB_URL}/oauth/authorize"
