@@ -7,6 +7,12 @@
   tasks:
   - name: run ab
     command: "ab -g result.tsv {{ ab_params }}"
+    register: ab_output
+  - name: save ab output
+    delegate_to: localhost
+    copy:
+      content: "{{ ab_output.stdout }}"
+      dest: "../results/{{ test_result_path }}/ab.txt"
   - name: setup gnuplot
     copy:
       src: "ab-{{ item }}.gp"
