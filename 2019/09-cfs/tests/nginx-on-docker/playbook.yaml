@@ -1,0 +1,38 @@
+- hosts: nginx-on-docker
+  gather_facts: no
+  tasks:
+  - name: copy nginx config
+    copy:
+      src: nginx.conf
+      dest: /nginx.conf
+  - name: create container with nginx
+    docker_container:
+      name: nginx
+      image: nginx
+      volumes: /nginx.conf:/etc/nginx/nginx.conf
+      published_ports: 80:80
+      cpu_shares: "{{ nginx_cpu_shares }}"
+  - name: create stress containers
+    docker_container:
+      name: "stress-{{ item }}"
+      image: progrium/stress
+      command: --cpu 1
+      cpu_shares: "{{ stress_cpu_shares }}"
+    loop: "{{ range(number_of_stress_containers) | list }}"
+
+- import_playbook: ../generate-load-and-gather-results.yaml
+
+- hosts: nginx-on-docker
+  gather_facts: no
+  tasks:
+  - name: delete stress containers
+    docker_container:
+      name: "stress-{{ item }}"
+      force_kill: true
+      state: absent
+    loop: "{{ range(number_of_stress_containers) | list }}"
+  - name: delete container with nginx
+    docker_container:
+      name: nginx
+      force_kill: true
+      state: absent
