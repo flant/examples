@@ -1,0 +1,29 @@
+- hosts: nginx-on-docker
+  tasks:
+  - name: install docker
+    apt:
+      name: docker.io
+      update_cache: yes
+  - name: install python3 and pip3
+    apt:
+      name:
+      - python3
+      - python3-pip
+  - name: install docker-py
+    pip:
+      name: docker-py
+
+- hosts: load-generator
+  tasks:
+  - name: install apache benchmark and gnuplot
+    apt:
+      name:
+      - apache2-utils
+      - gnuplot
+      update_cache: yes
+  - name: add nginx-on-docker to /etc/hosts
+    lineinfile:
+      dest: /etc/hosts
+      regexp: '^{{ hostvars["nginx-on-docker"].ansible_default_ipv4.address }} nginx-on-docker$'
+      line: '{{ hostvars["nginx-on-docker"].ansible_default_ipv4.address }} nginx-on-docker'
+      state: present

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+export ANSIBLE_SSH_ARGS="${ANSIBLE_SSH_ARGS:-"-C -o ControlMaster=auto -o ControlPersist=600s"} -o StrictHostKeyChecking=accept-new"
+
+if [[ "x$OS_X_JUMPER_HOST" != "x" ]] ; then
+  export ANSIBLE_SSH_ARGS="${ANSIBLE_SSH_ARGS} -o ProxyCommand='ssh ${OS_X_JUMPER_USER:-$USER}@$OS_X_JUMPER_HOST -W %h:%p'"
+
+  export TF_VAR_ssh_bastion_host=$OS_X_JUMPER_HOST
+  export TF_VAR_ssh_bastion_user=${OS_X_JUMPER_USER:-$USER}
+fi
+
+eval $(ssh-agent) > /dev/null
+trap "kill $SSH_AGENT_PID" EXIT
+ssh-add ~/.ssh/id_rsa || exit $?
+
+if [ ! -d .terraform ] ; then
+  terraform init infrastructure
+fi
+terraform apply infrastructure
+
+ansible-playbook -i ~/.ansible-terraform-inventory infrastructure/main.yaml

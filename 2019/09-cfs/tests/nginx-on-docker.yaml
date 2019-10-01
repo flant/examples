@@ -1,0 +1,73 @@
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 0
+    number_of_stress_containers: 0
+    stress_cpu_shares: 0
+    test_result_path: "nginx-on-docker/no-other-load"
+
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 0
+    number_of_stress_containers: 2
+    stress_cpu_shares: 0
+    test_result_path: "nginx-on-docker/no-shares/light-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 0
+    number_of_stress_containers: 4
+    stress_cpu_shares: 0
+    test_result_path: "nginx-on-docker/no-shares/hard-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 0
+    number_of_stress_containers: 10
+    stress_cpu_shares: 0
+    test_result_path: "nginx-on-docker/no-shares/extreme-stress"
+
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 2
+    stress_cpu_shares: 500
+    test_result_path: "nginx-on-docker/fifty-fifty-shares/light-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 4
+    stress_cpu_shares: 250
+    test_result_path: "nginx-on-docker/fifty-fifty-shares/hard-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 10
+    stress_cpu_shares: 100
+    test_result_path: "nginx-on-docker/fifty-fifty-shares/extreme-stress"
+
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 2
+    stress_cpu_shares: 2
+    test_result_path: "nginx-on-docker/all-shares-to-nginx/light-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 4
+    stress_cpu_shares: 2
+    test_result_path: "nginx-on-docker/all-shares-to-nginx/hard-stress"
+- import_playbook: nginx-on-docker/playbook.yaml
+  vars:
+    ab_params: -c 100 -n 500000 -k http://nginx-on-docker/
+    nginx_cpu_shares: 1000
+    number_of_stress_containers: 10
+    stress_cpu_shares: 2
+    test_result_path: "nginx-on-docker/all-shares-to-nginx/extreme-stress"

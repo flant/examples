@@ -1,0 +1,29 @@
+- hosts: load-generator
+  gather_facts: no
+  vars:
+    ab_plots:
+    - time-distribution
+    - timeline
+  tasks:
+  - name: run ab
+    command: "ab -g result.tsv {{ ab_params }}"
+    register: ab_output
+  - name: save ab output
+    delegate_to: localhost
+    copy:
+      content: "{{ ab_output.stdout }}"
+      dest: "../results/{{ test_result_path }}/ab.txt"
+  - name: setup gnuplot
+    copy:
+      src: "ab-{{ item }}.gp"
+      dest: "ab-{{ item }}.gp"
+    loop: "{{ ab_plots }}"
+  - name: generate plot
+    command: "gnuplot ab-{{ item }}.gp"
+    loop: "{{ ab_plots }}"
+  - name: fetch plot
+    fetch:
+      src: "{{ item }}.jpg"
+      dest: "../results/{{ test_result_path }}/{{ item }}.jpg"
+      flat: true
+    loop: "{{ ab_plots }}"
