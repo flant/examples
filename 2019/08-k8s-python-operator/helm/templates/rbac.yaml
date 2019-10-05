@@ -27,4 +27,4 @@ roleRef:
   name: {{ .Chart.Name }}
 subjects:
 - kind: ServiceAccount
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-acc
