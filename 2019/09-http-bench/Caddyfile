@@ -1,0 +1,6 @@
+http://benchmark.test, https://benchmark.test {
+
+    tls /etc/ssl/certs/nginx-selfsigned.crt /etc/ssl/private/nginx-selfsigned.key 
+
+    status 200 /bench
+}
