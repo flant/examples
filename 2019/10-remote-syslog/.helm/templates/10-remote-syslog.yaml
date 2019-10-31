@@ -1,0 +1,62 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      initContainers:
+      - name: auditd-init
+{{ tuple "auditd-init" . | include "werf_container_image" | indent 8 }}
+        securityContext:
+         privileged: true
+        command: ['/bin/bash', '-l', '-c', '/opt/scripts/auditd-init.sh']
+        volumeMounts:
+        - name: root
+          mountPath: /mnt/node
+      containers:
+      - name: remote-syslog
+{{ tuple "remote-syslog" . | include "werf_container_image" | indent 8 }}
+        securityContext:
+          privileged: true
+        command: ['/bin/bash', '-l', '-c', '/opt/scripts/remote-syslog.sh']
+        volumeMounts:
+        - name: systemd
+          mountPath: /run/systemd/private
+        - name: rsyslog-d
+          mountPath: /etc/rsyslog.d
+        - name: systemd-etc
+          mountPath: /etc/systemd
+        - name: sshd
+          mountPath: /etc/ssh
+        env:
+        - name: SYSLOG_SERVER
+          value: {{ pluck .Values.global.env .Values.syslog_server | first | default .Values.syslog_server._default }}
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: root
+        hostPath:
+          path: /
+      - name: systemd
+        hostPath:
+          path: /run/systemd/private
+      - name: rsyslog-d
+        hostPath:
+          path: /etc/rsyslog.d
+      - name: systemd-etc
+        hostPath:
+          path: /etc/systemd
+      - name: sshd
+        hostPath:
+          path: /etc/ssh

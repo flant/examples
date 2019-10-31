@@ -1,0 +1,3 @@
+---
+syslog_server:
+  default: "10.10.10.10:514"

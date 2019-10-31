@@ -1,0 +1,29 @@
+project: remote-syslog
+configVersion: 1
+---
+image: remote-syslog
+from: ubuntu:16.04
+git:
+  - add: /
+    to: /opt/scripts/
+---
+image: auditd-init
+from: ubuntu:16.04
+
+mount:
+- from: tmp_dir
+  to: /var/lib/apt/lists
+- from: build_dir
+  to: /var/cache/apt
+
+git:
+ - add: /
+   to: /opt/scripts/
+
+ansible:
+ install:
+  - name: Install wget
+    apt:
+     update_cache: yes
+     name: wget
+     state: latest
