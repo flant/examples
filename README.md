@@ -9,15 +9,15 @@ Redirect URI(Callback url) устанавливаем вида https://dashboard
 Usage: ctl.sh [OPTION]... --gitlab-url GITLAB_URL --oauth2-id ID --oauth2-secret SECRET --dashboard-url DASHBOARD_URL
 Install kubernetes-dashboard to Kubernetes cluster.
 Mandatory arguments:
-  -i, --install                install into 'kube-nginx-ingress' namespace
+  -i, --install                install into 'kube-system' namespace
   -u, --upgrade                upgrade existing installation, will reuse password and host names
   -d, --delete                 remove everything, including the namespace
-Optional arguments:
-  -h, --help                   output this message
       --gitlab-url             set gitlab url with schema (https://gitlab.example.com)
       --oauth2-id              set OAUTH2_PROXY_CLIENT_ID from gitlab
       --oauth2-secret          set OAUTH2_PROXY_CLIENT_SECRET from gitlab
       --dashboard-url          set dashboard url without schema (dashboard.example.com)
+Optional arguments:
+  -h, --help                   output this message
 ```
 ссылки на документацию:
 

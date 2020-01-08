@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2017 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Configuration to deploy release version of the Dashboard UI compatible with
-# Kubernetes 1.6 (RBAC enabled).
-#
-# Example usage: kubectl create -f <this_file>
+---
+# ------------------- Dashboard Service Account ------------------- #
 
 apiVersion: v1
 kind: ServiceAccount
@@ -26,10 +24,13 @@ metadata:
   namespace: kube-system
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+# ------------------- Dashboard Role & Role Binding ------------------- #
+
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: kubernetes-dashboard
+  namespace: kube-system
   labels:
     k8s-app: kubernetes-dashboard
 roleRef:
@@ -42,15 +43,17 @@ subjects:
   namespace: kube-system
 
 ---
+# ------------------- Dashboard Deployment ------------------- #
+
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   labels:
     k8s-app: kubernetes-dashboard
   name: kubernetes-dashboard
   namespace: kube-system
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -62,7 +65,7 @@ spec:
     spec:
       containers:
       - name: kubernetes-dashboard
-        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.6.3
+        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.10.1
         resources:
           requests:
             cpu: "100m"
@@ -71,22 +74,33 @@ spec:
         - containerPort: 9090
           protocol: TCP
         args:
+          # - --auto-generate-certificates
           # Uncomment the following line to manually specify Kubernetes API server Host
           # If not specified, Dashboard will attempt to auto discover the API server and connect
           # to it. Uncomment only if the default does not work.
           # - --apiserver-host=http://my-address:port
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmp-volume
         livenessProbe:
           httpGet:
+            scheme: HTTP
             path: /
             port: 9090
           initialDelaySeconds: 30
           timeoutSeconds: 30
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
       serviceAccountName: kubernetes-dashboard
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+
 ---
+# ------------------- Dashboard Service ------------------- #
+
 kind: Service
 apiVersion: v1
 metadata:
@@ -96,8 +110,7 @@ metadata:
   namespace: kube-system
 spec:
   ports:
-  - port: 80
-    targetPort: 9090
+    - port: 80
+      targetPort: 9090
   selector:
     k8s-app: kubernetes-dashboard
-

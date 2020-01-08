@@ -17,13 +17,13 @@ spec:
     spec:
       containers:
       - args:
-        - --provider=gitlab
+        - -provider=gitlab
         - -login-url=##LOGIN_URL##
         - -redeem-url=##REDEEM_URL##
         - -validate-url=##VALIDATE_URL##
-        - --email-domain=*
-        - --upstream=file:///dev/null
-        - --http-address=0.0.0.0:4180
+        - -email-domain=*
+        - -upstream=file:///dev/null
+        - -http-address=0.0.0.0:4180
         # Register a new application
         # https://github.com/settings/applications/new
         env:
@@ -54,6 +54,10 @@ spec:
         ports:
         - containerPort: 4180
           protocol: TCP
+      tolerations:
+      - effect: NoExecute
+        key: node-role/system
+        operator: Exists
 
 ---
 
