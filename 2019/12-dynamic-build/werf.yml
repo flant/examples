@@ -1,0 +1,117 @@
+{{ $_ := set . "WerfVersions" (cat (env "CHANNELS") (env "RELEASES") | splitList " ") }}
+{{ $Root := . }}
+{{ $_ := set . "WerfRootVersion" (env "ROOT_VERSION") }}
+
+configVersion: 1
+project: werfio
+---
+{{ range .WerfVersions -}}
+{{ $VersionsDict := splitn "%" 2 . -}}
+{{ dict "Version" $VersionsDict._1 "URL" $VersionsDict._0 "Root" $Root | include "doc_artifact" }}
+---
+{{ end -}}
+{{/* Build doc for root */}}
+{{ dict "Version" .WerfRootVersion "URL" "root" "Root" $Root  | include "doc_artifact" }}
+---
+{{/* Build master branch */}}
+{{ dict "Version" "master" "URL" "master" "Root" $Root  | include "doc_artifact" }}
+---
+image: werf-doc
+from: nginx:stable-alpine
+ansible:
+  setup:
+  - name: "Setup /etc/nginx/nginx.conf"
+    copy:
+      content: |
+{{ .Files.Get ".werf/nginx.conf" | indent 8 }}
+      dest: /etc/nginx/nginx.conf
+  - file:
+      path: /app/assets
+      state: directory
+      mode: 0777
+import:
+- artifact: doc-root
+  add: /app/_site
+  to: /app/
+  before: setup
+{{ range .WerfVersions -}}
+{{ $VersionsDict := splitn "%" 2 . -}}
+{{ $URL := $VersionsDict._0 -}}
+{{ $Version := $VersionsDict._1 -}}
+- artifact: doc-{{ $URL }}
+  add: /app/_site
+  to: /app/v{{ $URL }}
+  before: setup
+{{ end -}}
+---
+image: werf-dev
+from: nginx:stable-alpine
+ansible:
+  setup:
+  - name: "Setup /etc/nginx/nginx.conf"
+    copy:
+      content: |
+{{ .Files.Get ".werf/nginx.conf" | indent 8 }}
+      dest: /etc/nginx/nginx.conf
+  - file:
+      path: /app/assets
+      state: directory
+      mode: 0777
+import:
+- artifact: doc-root
+  add: /app/_site
+  to: /app/
+  before: setup
+- artifact: doc-master
+  add: /app/_site
+  to: /app/master
+  before: setup
+---
+{{- define "doc_artifact" -}}
+{{- $Root := index . "Root" -}}
+artifact: doc-{{ .URL }}
+from: jekyll/builder:3
+ansible:
+  install:
+{{- if and (empty ($Root.Files.Get "releases.yml")) (eq .URL "root") }}
+  - name: "ERROR: WerfReleasesDescription is empty for root site version!"
+    shell: exit 1
+{{- end }}
+{{- if eq .URL "root" }}
+  - name: "releases.yml HASH: {{ "releases.yml" | sha256sum }}"
+    copy:
+      content: |
+{{ $Root.Files.Get "releases.yml" | indent 8 }}
+      dest:  /app/docs/_data/releases.yml
+{{- else }}
+  - file:
+      path: /app/docs/_data/releases.yml
+      state: touch
+{{- end }}
+  - file:
+      path: /app/_site/
+      state: directory
+      mode: 0777
+  - shell: |
+      echo "werfVersion: {{ .Version }}" > /tmp/_config_additional.yml
+      export PATH=/usr/jekyll/bin/:$PATH
+{{- if and (ne .Version "master") (ne .URL "root") }}
+{{- $_ := set . "BaseURL" ( printf "v%s" .URL ) }}
+{{- else if ne .URL "root"}}
+{{- $_ := set . "BaseURL" .URL }}
+{{- end }}
+      jekyll build -s /app/docs  -d /app/_site/{{ if .BaseURL }} --baseurl /{{ .BaseURL }}{{ end }} --config /app/docs/_config.yml,/tmp/_config_additional.yml
+    args:
+      executable: /bin/bash
+git:
+- url: https://github.com/flant/werf.git
+  to: /app/
+  owner: jekyll
+  group: jekyll
+{{- if ne .Version "master" }}
+  tag: {{ .Version }}
+{{- end }}
+  stageDependencies:
+    install: '**/*'
+  includePaths: 'docs'
+{{- end }}

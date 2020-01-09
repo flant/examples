@@ -1,0 +1,77 @@
+stages:
+  - prebuild
+  - build
+  - deploy
+  - cleanup
+
+.base_deploy: &base_deploy
+  stage: deploy
+  script:
+    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
+    - source common_envs.sh
+    - werf deploy --stages-storage :local
+  dependencies:
+    - Prebuild
+  except:
+    refs:
+      - schedules
+
+Prebuild:
+  stage: prebuild
+  script: 
+    - 'curl -s  https://api.github.com/repos/flant/werf/releases | jq ''.| del(.[].author) | map(select(.tag_name|test("^v"))) | map(.body = "{% raw %}\(.body){% endraw %}\n\n") | {releases: .}''  | yq r - 1>releases.yml'
+    - echo "Checking releases.yml validity"
+    - yq r releases.yml
+    - bash get_common_envs.sh 1> common_envs.sh
+    - cat common_envs.sh
+  artifacts:
+    paths:
+      - releases.yml
+      - common_envs.sh
+    expire_in: 2 week
+
+Build:
+  stage: build
+  script:
+    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
+    - source common_envs.sh
+    - werf build-and-publish --stages-storage :local
+  except:
+    refs:
+      - schedules
+  dependencies:
+    - Prebuild
+
+Deploy to Production:
+  <<: *base_deploy
+  variables:
+    WERF_KUBE_CONTEXT: prod
+  environment:
+    name: production
+    url: werf.io
+  only:
+    refs:
+      - master
+
+Deploy to Test:
+  <<: *base_deploy
+  variables:
+    WERF_KUBE_CONTEXT: dev
+  environment:
+    name: test
+    url: werf.test.flant.com
+
+
+Cleanup:
+  stage: cleanup
+  script:
+    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
+    - source common_envs.sh
+    - docker login -u nobody -p ${WERF_IMAGES_CLEANUP_PASSWORD} ${WERF_IMAGES_REPO}
+    - werf cleanup --stages-storage :local
+  only:
+    refs:
+      - schedules
