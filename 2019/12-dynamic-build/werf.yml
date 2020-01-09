@@ -78,7 +78,7 @@ ansible:
     shell: exit 1
 {{- end }}
 {{- if eq .URL "root" }}
-  - name: "releases.yml HASH: {{ "releases.yml" | sha256sum }}"
+  - name: "releases.yml HASH: {{ $Root.Files.Get "releases.yml" | sha256sum }}"
     copy:
       content: |
 {{ $Root.Files.Get "releases.yml" | indent 8 }}
