@@ -7,7 +7,7 @@ stages:
 .base_deploy: &base_deploy
   stage: deploy
   script:
-    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type multiwerf && . $(multiwerf use 1.0 alpha --as-file)
     - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
     - source common_envs.sh
     - werf deploy --stages-storage :local
@@ -19,12 +19,9 @@ stages:
 
 Prebuild:
   stage: prebuild
-  script: 
-    - 'curl -s  https://api.github.com/repos/flant/werf/releases | jq ''.| del(.[].author) | map(select(.tag_name|test("^v"))) | map(.body = "{% raw %}\(.body){% endraw %}\n\n") | {releases: .}''  | yq r - 1>releases.yml'
-    - echo "Checking releases.yml validity"
-    - yq r releases.yml
-    - bash get_common_envs.sh 1> common_envs.sh
-    - cat common_envs.sh
+  script:
+    - bash ./generate_artifacts 1> common_envs.sh
+    - cat ./common_envs.sh
   artifacts:
     paths:
       - releases.yml
@@ -34,7 +31,7 @@ Prebuild:
 Build:
   stage: build
   script:
-    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type multiwerf && . $(multiwerf use 1.0 alpha --as-file)
     - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
     - source common_envs.sh
     - werf build-and-publish --stages-storage :local
@@ -54,6 +51,11 @@ Deploy to Production:
   only:
     refs:
       - master
+  except:
+    variables:
+      - $REVIEW_SHA
+    refs:
+      - schedules
 
 Deploy to Test:
   <<: *base_deploy
@@ -62,12 +64,17 @@ Deploy to Test:
   environment:
     name: test
     url: werf.test.flant.com
-
+  except:
+    refs:
+      - schedules
+  only:
+    variables:
+      - $REVIEW_SHA
 
 Cleanup:
   stage: cleanup
   script:
-    - type multiwerf && source <(multiwerf use 1.0 alpha)
+    - type multiwerf && . $(multiwerf use 1.0 alpha --as-file)
     - type werf && source <(werf ci-env gitlab --tagging-strategy tag-or-branch --verbose)
     - source common_envs.sh
     - docker login -u nobody -p ${WERF_IMAGES_CLEANUP_PASSWORD} ${WERF_IMAGES_REPO}

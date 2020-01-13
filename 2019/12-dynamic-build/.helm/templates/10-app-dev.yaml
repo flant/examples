@@ -1,0 +1,63 @@
+{{- if ne .Values.global.env "production" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-dev
+  labels:
+    service: {{ .Chart.Name }}-dev
+spec:
+  minReadySeconds: 5
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      service: {{ .Chart.Name }}-dev
+  template:
+    metadata:
+      labels:
+        service: {{ .Chart.Name }}-dev
+    spec:
+      imagePullSecrets:
+        - name: registrysecret
+      containers:
+        - name: web
+          command: ["nginx", "-g", "daemon off;"]
+{{ tuple "werf-dev" . | include "werf_container_image" | indent 10 }}
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx", "-s", "quit"]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+{{ tuple "werf-dev" . | include "werf_container_env" | indent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-dev
+spec:
+  clusterIP: None
+  selector:
+    service: {{ .Chart.Name }}-dev
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+---
+apiVersion: v1
+data:
+  auth: {{ .Values.basic_auth }}
+kind: Secret
+metadata:
+  name: basic-auth
+type: Opaque
+{{- end }}

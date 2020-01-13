@@ -1,20 +1,94 @@
 {{ $_ := set . "WerfVersions" (cat (env "CHANNELS") (env "RELEASES") | splitList " ") }}
 {{ $Root := . }}
 {{ $_ := set . "WerfRootVersion" (env "ROOT_VERSION") }}
+{{ $_ := set . "WerfReviewCommit" (env "REVIEW_SHA") }}
 
 configVersion: 1
 project: werfio
 ---
 {{ range .WerfVersions -}}
 {{ $VersionsDict := splitn "%" 2 . -}}
-{{ dict "Version" $VersionsDict._1 "URL" $VersionsDict._0 "Root" $Root | include "doc_artifact" }}
+{{ dict "Version" $VersionsDict._1 "Channel" $VersionsDict._0 "Root" $Root | include "doc_artifact" }}
 ---
 {{ end -}}
 {{/* Build doc for root */}}
-{{ dict "Version" .WerfRootVersion "URL" "root" "Root" $Root  | include "doc_artifact" }}
+{{ dict "Version" .WerfRootVersion "Channel" "root" "Root" $Root  | include "doc_artifact" }}
 ---
-{{/* Build master branch */}}
-{{ dict "Version" "master" "URL" "master" "Root" $Root  | include "doc_artifact" }}
+{{- if .WerfReviewCommit }}
+{{ dict "Version" "review" "Channel" "review" "Commit" .WerfReviewCommit "Root" $Root  | include "doc_artifact" }}
+{{- end }}
+---
+{{- define "doc_artifact" -}}
+{{- $Root := index . "Root" -}}
+artifact: doc-{{ .Channel }}
+from: jekyll/builder:3
+mount:
+- from: build_dir
+  to: /usr/local/bundle
+ansible:
+  install:
+  - shell: |
+      export PATH=/usr/jekyll/bin/:$PATH
+  - name: "Install Dependencies"
+    shell: bundle install
+    args:
+      executable: /bin/bash
+      chdir: /app/docs
+  beforeSetup:
+{{- if .Commit }}
+  - shell: echo "Review SHA - {{ .Commit }}."
+{{- end }}
+{{- if eq .Channel "root" }}
+  - name: "releases.yml HASH: {{ $Root.Files.Get "releases.yml" | sha256sum }}"
+    copy:
+      content: |
+{{ $Root.Files.Get "releases.yml" | indent 8 }}
+      dest:  /app/docs/_data/releases.yml
+{{- else }}
+  - file:
+      path: /app/docs/_data/releases.yml
+      state: touch
+{{- end }}
+  - file:
+      path: "{{`{{ item }}`}}"
+      state: directory
+      mode: 0777
+    with_items:
+    - /app/main_site/
+    - /app/ru_site/
+  - file:
+      dest: /app/docs/pages_ru/cli
+      state: link
+      src: /app/docs/pages/cli
+  - shell: |
+      echo -e "werfVersion: {{ .Version }}\nwerfChannel: {{ .Channel }}" > /tmp/_config_additional.yml
+      export PATH=/usr/jekyll/bin/:$PATH
+{{- if and (ne .Version "review") (ne .Channel "root") }}
+{{- $_ := set . "BaseURL" ( printf "v%s" .Channel ) }}
+{{- else if ne .Channel "root" }}
+{{- $_ := set . "BaseURL" .Channel }}
+{{- end }}
+      jekyll build -s /app/docs  -d /app/_main_site/{{ if .BaseURL }} --baseurl /{{ .BaseURL }}{{ end }} --config /app/docs/_config.yml,/tmp/_config_additional.yml
+      jekyll build -s /app/docs  -d /app/_ru_site/{{ if .BaseURL }} --baseurl /{{ .BaseURL }}{{ end }} --config /app/docs/_config.yml,/app/docs/_config_ru.yml,/tmp/_config_additional.yml
+    args:
+      executable: /bin/bash
+      chdir: /app/docs
+git:
+- url: https://github.com/flant/werf.git
+  to: /app/
+  owner: jekyll
+  group: jekyll
+{{- if .Commit }}
+  commit: {{ .Commit }}
+{{- else }}
+  tag: {{ .Version }}
+{{- end }}
+  stageDependencies:
+    install: ['docs/Gemfile','docs/Gemfile.lock']
+    beforeSetup: '**/*'
+  includePaths: 'docs'
+  excludePaths: '**/*.sh'
+{{- end }}
 ---
 image: werf-doc
 from: nginx:stable-alpine
@@ -26,21 +100,37 @@ ansible:
 {{ .Files.Get ".werf/nginx.conf" | indent 8 }}
       dest: /etc/nginx/nginx.conf
   - file:
-      path: /app/assets
+      path: "{{`{{ item }}`}}"
       state: directory
       mode: 0777
+    with_items:
+    - /app/main_site/assets
+    - /app/ru_site/assets
 import:
 - artifact: doc-root
-  add: /app/_site
-  to: /app/
+  add: /app/_main_site
+  to: /app/main_site
+  before: setup
+- artifact: doc-root
+  add: /app/_ru_site
+  to: /app/ru_site
   before: setup
 {{ range .WerfVersions -}}
 {{ $VersionsDict := splitn "%" 2 . -}}
-{{ $URL := $VersionsDict._0 -}}
+{{ $Channel := $VersionsDict._0 -}}
 {{ $Version := $VersionsDict._1 -}}
-- artifact: doc-{{ $URL }}
-  add: /app/_site
-  to: /app/v{{ $URL }}
+- artifact: doc-{{ $Channel }}
+  add: /app/_main_site
+  to: /app/main_site/v{{ $Channel }}
+  before: setup
+{{ end -}}
+{{ range .WerfVersions -}}
+{{ $VersionsDict := splitn "%" 2 . -}}
+{{ $Channel := $VersionsDict._0 -}}
+{{ $Version := $VersionsDict._1 -}}
+- artifact: doc-{{ $Channel }}
+  add: /app/_ru_site
+  to: /app/ru_site/v{{ $Channel }}
   before: setup
 {{ end -}}
 ---
@@ -54,64 +144,28 @@ ansible:
 {{ .Files.Get ".werf/nginx.conf" | indent 8 }}
       dest: /etc/nginx/nginx.conf
   - file:
-      path: /app/assets
+      path: "{{`{{ item }}`}}"
       state: directory
       mode: 0777
+    with_items:
+    - /app/main_site/assets
+    - /app/ru_site/assets
 import:
 - artifact: doc-root
-  add: /app/_site
-  to: /app/
+  add: /app/_main_site
+  to: /app/main_site
   before: setup
-- artifact: doc-master
-  add: /app/_site
-  to: /app/master
+- artifact: doc-root
+  add: /app/_ru_site
+  to: /app/ru_site
   before: setup
----
-{{- define "doc_artifact" -}}
-{{- $Root := index . "Root" -}}
-artifact: doc-{{ .URL }}
-from: jekyll/builder:3
-ansible:
-  install:
-{{- if and (empty ($Root.Files.Get "releases.yml")) (eq .URL "root") }}
-  - name: "ERROR: WerfReleasesDescription is empty for root site version!"
-    shell: exit 1
-{{- end }}
-{{- if eq .URL "root" }}
-  - name: "releases.yml HASH: {{ $Root.Files.Get "releases.yml" | sha256sum }}"
-    copy:
-      content: |
-{{ $Root.Files.Get "releases.yml" | indent 8 }}
-      dest:  /app/docs/_data/releases.yml
-{{- else }}
-  - file:
-      path: /app/docs/_data/releases.yml
-      state: touch
-{{- end }}
-  - file:
-      path: /app/_site/
-      state: directory
-      mode: 0777
-  - shell: |
-      echo "werfVersion: {{ .Version }}" > /tmp/_config_additional.yml
-      export PATH=/usr/jekyll/bin/:$PATH
-{{- if and (ne .Version "master") (ne .URL "root") }}
-{{- $_ := set . "BaseURL" ( printf "v%s" .URL ) }}
-{{- else if ne .URL "root"}}
-{{- $_ := set . "BaseURL" .URL }}
-{{- end }}
-      jekyll build -s /app/docs  -d /app/_site/{{ if .BaseURL }} --baseurl /{{ .BaseURL }}{{ end }} --config /app/docs/_config.yml,/tmp/_config_additional.yml
-    args:
-      executable: /bin/bash
-git:
-- url: https://github.com/flant/werf.git
-  to: /app/
-  owner: jekyll
-  group: jekyll
-{{- if ne .Version "master" }}
-  tag: {{ .Version }}
-{{- end }}
-  stageDependencies:
-    install: '**/*'
-  includePaths: 'docs'
+{{- if .WerfReviewCommit  }}
+- artifact: doc-review
+  add: /app/_main_site
+  to: /app/main_site/review
+  before: setup
+- artifact: doc-review
+  add: /app/_ru_site
+  to: /app/ru_site/review
+  before: setup
 {{- end }}

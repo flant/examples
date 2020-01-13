@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  annotations:
+    "werf.io/set-replicas-only-on-creation": "true"
+  labels:
+    service: {{ .Chart.Name }}
+spec:
+  minReadySeconds: 5
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      service: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        service: {{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+        - name: registrysecret
+      containers:
+        - name: web
+          command: ["nginx", "-g", "daemon off;"]
+{{ tuple "werf-doc" . | include "werf_container_image" | indent 10 }}
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx", "-s", "quit"]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+{{ tuple "werf-doc" . | include "werf_container_env" | indent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  clusterIP: None
+  selector:
+    service: {{ .Chart.Name }}
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
