@@ -1,0 +1,6 @@
+host:
+  production: werf.io
+  _default: werf.test.flant.com
+
+basic_auth: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+

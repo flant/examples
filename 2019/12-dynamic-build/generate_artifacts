@@ -1,0 +1,33 @@
+#!/bin/bash
+
+DATA=${1:-git_history.json}
+
+function get_stable_version_for_group() {
+
+  local _GROUP_VER=$(cat $DATA | jq --arg group $1 '.history| map(select (.group == $group)) | .[0].channels as $i |  if ($i[] | select(.name == "rock-solid") | .version | length ) > 0 then ($i[] | select(.name == "rock-solid") | .version ) elif ($i[] | select(.name == "stable") | .version | length ) > 0 then ($i[] | select(.name == "stable") | .version )
+    elif ($i[] | select(.name == "ea") | .version | length ) > 0 then ($i[] | select(.name == "ea") | .version )
+    elif ($i[] | select(.name == "beta") | .version | length ) > 0 then ($i[] | select(.name == "beta") | .version )
+    elif ($i[] | select(.name == "alpha") | .version | length ) > 0 then ($i[] | select(.name == "alpha") | .version )
+    else "error" end' | sed 's/\"//g' )
+    #'
+  echo ${_GROUP_VER}
+}
+
+# artifact releases.yml
+curl -s  https://api.github.com/repos/flant/werf/releases | jq '.| del(.[].author) | map(select(.tag_name|test("^v"))) | map(.body = "{% raw %}\(.body | gsub("\n";"  \n") ){% endraw %}\n\n") | {releases: .} ' | yq r - 1> releases.yml
+
+./get_git_history | jq '{"history":.}' > $DATA
+
+RELEASES=$(for i in $(cat $DATA | jq '.history| unique_by(.group) | .[].group' | xargs); do
+  #'
+  echo "$i%$(get_stable_version_for_group $i)"
+done | xargs )
+
+echo "export RELEASES='$RELEASES'"
+
+CHANNELS=$(cat $DATA | jq '.history[0] as $item | $item.group as $group | $item.channels[] | select((.version | length) >0)  | "\($group)-\(.name)%\(.version)"'  | xargs)
+#'
+echo "export CHANNELS='$CHANNELS'"
+
+ROOT_VERSION=$(get_stable_version_for_group ${ROOT_RELEASE:="1.0"})
+echo "export ROOT_VERSION='$ROOT_VERSION'"
