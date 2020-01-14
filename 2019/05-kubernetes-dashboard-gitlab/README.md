@@ -1,10 +1,14 @@
-# kubernetes-dashboard
-Используемый oauth провайдер - gitlab
+Листинги для интеграции Kubernetes Dashboard и пользователей GitLab из [нашей статьи на хабре](https://habr.com/ru/company/flant/blog/452988/).
 
-Регистрируем в гитлаб новое приложение. Для этого идем Admin area -> Applications -> New application
+# Инструкции
 
-Redirect URI(Callback url) устанавливаем вида https://dashboard.example.com/oauth2/callback
+Используемый OAuth-провайдер — GitLab.
 
+Регистрируем в GitLab новое приложение: Admin area → Applications → New application.
+
+Устанавливаем Redirect URI (callback url) вида ```https://dashboard.example.com/oauth2/callback```
+
+Далее пользуемся Bash-скриптом:
 ```
 Usage: ctl.sh [OPTION]... --gitlab-url GITLAB_URL --oauth2-id ID --oauth2-secret SECRET --dashboard-url DASHBOARD_URL
 Install kubernetes-dashboard to Kubernetes cluster.
@@ -19,8 +23,10 @@ Mandatory arguments:
 Optional arguments:
   -h, --help                   output this message
 ```
-ссылки на документацию:
+
+Ссылки на дополнительную документацию:
 
 * https://github.com/colemickens/oauth2_proxy/blob/master/README.md#gitlab-auth-provider
 * https://docs.gitlab.com/ce/integration/oauth_provider.html
 * https://github.com/kubernetes/ingress/tree/master/examples/external-auth/nginx
+
