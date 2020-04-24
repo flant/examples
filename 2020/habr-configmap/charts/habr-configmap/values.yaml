@@ -1,0 +1,23 @@
+welcome:
+  production: "Hello"
+name:
+  production: "Bob"
+
+secret:
+  secret_conf_json: |
+    {
+      "bob_key": "SuperSecretKeyV2",
+      "alice_key": "AnotherSuperSecretKeyV2"
+    }
+  another_yaml: |
+    external:
+      service:
+        access_key: "MoreSecretsMoar!"
+
+resources:
+  app:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      memory: "64Mi"

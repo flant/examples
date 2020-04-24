@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-v2-removemeafterchange" .Chart.Name | quote }}
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ printf "%s-v2" .Chart.Name | quote }}
+    spec:
+      imagePullSecrets:
+      - name: "registrysecret"
+      volumes:
+      - name: app-conf
+        configMap:
+          name: {{ printf "%s-app-v2-changeme" .Chart.Name | quote }}
+      containers:
+      - name: {{ .Chart.Name | quote }}
+{{- include "resources_app" . | indent 8 }}
+        image: "drdeimosnn/habr-configmap:0.0.1"
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 40004
+          allowPrivilegeEscalation: false
+        command: [ "/bin/habr-configmap" ]
+        workingDir: "/app"
+        volumeMounts:
+        - name: app-conf
+          mountPath: /app/configfiles/config.json
+          subPath: config.json

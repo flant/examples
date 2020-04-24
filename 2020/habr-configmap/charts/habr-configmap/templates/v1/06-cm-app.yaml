@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-app-v1" .Chart.Name | quote }}
+data:
+  config.json: |
+    {
+      "welcome": {{ pluck .Values.global.env .Values.welcome | first | quote }},
+      "name": {{ pluck .Values.global.env .Values.name | first | quote }}
+    }

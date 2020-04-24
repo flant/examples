@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-app-v3" .Chart.Name | quote }}
+data:
+  config.json: |
+    {
+      "welcome": {{ pluck .Values.global.env .Values.welcome | first | quote }},
+      "name": {{ pluck .Values.global.env .Values.name | first | quote }}
+    }
+  database.yml: |
+    host: 127.0.0.1
+    db: app
+    user: app
+    password: app

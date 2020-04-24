@@ -1,0 +1,10 @@
+name: habr-configmap
+version: 0.0.1
+description: Configmap usage example
+keywords:
+- habr
+- configmap
+home: https://github.com/drdeimos/habr-configmap
+maintainers:
+- name: Mikhail Nosov
+  email: drdeimosnn@gmail.com

@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-v3" .Chart.Name | quote }}
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ printf "%s-v3" .Chart.Name | quote }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/v3/06-cm-app.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/v3/07-secret-app.yaml") . | sha256sum }}
+    spec:
+      imagePullSecrets:
+      - name: "registrysecret"
+      volumes:
+      - name: app-conf
+        configMap:
+          name: {{ printf "%s-app-v3" .Chart.Name | quote }}
+      - name: app-secrets
+        secret:
+          secretName: {{ printf "%s-app-secret-v3" .Chart.Name | quote }}
+      containers:
+      - name: {{ .Chart.Name | quote }}
+{{- include "resources_app" . | indent 8 }}
+        image: "drdeimosnn/habr-configmap:0.0.1"
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 40004
+          allowPrivilegeEscalation: false
+        command: [ "/bin/habr-configmap" ]
+        workingDir: "/app"
+        volumeMounts:
+        - name: app-conf
+          mountPath: /app/configfiles/config.json
+          subPath: config.json
+        - name: app-conf
+          mountPath: /app/configfiles/database.yml
+          subPath: database.yml
+        - name: app-secrets
+          mountPath: /app/secretfiles/secret_conf.json
+          subPath: secret_conf.json
+        - name: app-secrets
+          mountPath: /app/secretfiles/another.yaml
+          subPath: another.yaml
