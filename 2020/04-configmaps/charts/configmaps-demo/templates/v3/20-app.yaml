@@ -25,12 +25,12 @@ spec:
       containers:
       - name: {{ .Chart.Name | quote }}
 {{- include "resources_app" . | indent 8 }}
-        image: "drdeimosnn/habr-configmap:0.0.1"
+        image: "drdeimosnn/configmaps-demo:0.0.1"
         imagePullPolicy: Always
         securityContext:
           runAsUser: 40004
           allowPrivilegeEscalation: false
-        command: [ "/bin/habr-configmap" ]
+        command: [ "/bin/configmaps-demo" ]
         workingDir: "/app"
         volumeMounts:
         - name: app-conf

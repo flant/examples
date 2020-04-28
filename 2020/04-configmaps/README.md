@@ -10,11 +10,11 @@ Intended to be used as a playground with corresponding article:
 ## Deploying this chart
 
 ```shell
-git clone https://github.com/drdeimos/habr-configmap
+git clone https://github.com/flant/examples.git flant-examples
 helm install \
-  ./habr-configmap/charts/habr-configmap/ \
-  --name habr-configmap \
-  --namespace habr-configmap \
+  ./flant-examples/2020/04-configmaps/charts/configmaps-demo/ \
+  --name configmaps-demo \
+  --namespace configmaps-demo \
   --set 'name.production=Tod' \
   --set 'global.env=production'
 ```
@@ -22,10 +22,9 @@ helm install \
 ## Upgrading the chart
 
 ```shell
-git clone https://github.com/drdeimos/habr-configmap
 helm upgrade \
-  habr-configmap \
-  ./habr-configmap/charts/habr-configmap/ \
+  configmaps-demo \
+  ./flant-examples/2020/04-configmaps/charts/configmaps-demo/ \
   --set 'name.production=Mary' \
   --set 'global.env=production'
 ```

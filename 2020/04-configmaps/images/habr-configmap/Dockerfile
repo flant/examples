@@ -10,7 +10,7 @@ RUN apk update && apk add git
 RUN go get github.com/fsnotify/fsnotify
 
 RUN cd /go/src/github.com && \
-    git clone https://github.com/drdeimos/habr-configmap
+    git clone https://github.com/flant/examples.git flant-examples
 
-RUN cd /go/src/github.com/habr-configmap/src && \
-    go build -o /bin/habr-configmap main.go
+RUN cd /go/src/github.com/flant-examples/2020/04-configmaps/src/ && \
+    go build -o /bin/configmaps-demo main.go
