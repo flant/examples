@@ -1,3 +1,15 @@
+# Enhanced version of etcdhelper
+
+This is a modified version of [etcdhelper](https://github.com/openshift/origin/tree/master/tools/etcdhelper) from OpenShift (by [Flant](https://flant.com/)).
+Two new functions are introduced: `changeServiceCIDR` and `changePodCIDR`.
+
+Intended to be used as a playground for a corresponding article:
+
+* «[How to modify etcd data of your Kubernetes directly (without K8s API)](https://medium.com/flant-com/modifying-kubernetes-etcd-data-ed3d4bb42379)».
+* Russian version: «[Наш опыт работы с данными в etcd Kubernetes-кластера напрямую (без K8s API)](https://habr.com/ru/company/flant/blog/501956/)».
+
+# Building etcdhelper
+
 ## Install golang
 
 ```shell
@@ -21,7 +33,7 @@ go get go.etcd.io/etcd/clientv3 k8s.io/kubectl/pkg/scheme k8s.io/apimachinery/pk
 go build -o etcdhelper etcdhelper.go
 ```
 
-## Sample Usage
+## Using etcdhelper
 
 ### Change service CIDR
 
@@ -34,3 +46,7 @@ go build -o etcdhelper etcdhelper.go
 ```shell
 ./etcdhelper -cacert /etc/kubernetes/pki/etcd/ca.crt -cert /etc/kubernetes/pki/etcd/server.crt -key /etc/kubernetes/pki/etcd/server.key -endpoint https://127.0.0.1:2379 change-pod-cidr 10.55.0.0/16
 ```
+
+# Status
+
+This enhanced version of etcdhelper is **PoC (proof of concept)**. Use it on your own risk.
