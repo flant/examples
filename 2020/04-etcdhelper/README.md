@@ -1,16 +1,18 @@
 # Enhanced version of etcdhelper
 
-This is a modified version of [etcdhelper](https://github.com/openshift/origin/tree/master/tools/etcdhelper) from OpenShift (by [Flant](https://flant.com/)).
+This is a modified version of [etcdhelper](https://github.com/openshift/origin/tree/master/tools/etcdhelper) from OpenShift (modifications are made by [Flant](https://flant.com/)).
 Two new functions are introduced: `changeServiceCIDR` and `changePodCIDR`.
 
-Intended to be used as a playground for a corresponding article:
+This repo is intended to be used as a playground for a corresponding article:
 
-* «[How to modify etcd data of your Kubernetes directly (without K8s API)](https://medium.com/flant-com/modifying-kubernetes-etcd-data-ed3d4bb42379)».
+* «**[How to modify etcd data of your Kubernetes directly (without K8s API)](https://medium.com/flant-com/modifying-kubernetes-etcd-data-ed3d4bb42379)**».
 * Russian version: «[Наш опыт работы с данными в etcd Kubernetes-кластера напрямую (без K8s API)](https://habr.com/ru/company/flant/blog/501956/)».
 
-# Building etcdhelper
+# Using etcdhelper
 
-## Install golang
+## Building
+
+### Install golang
 
 ```shell
 GOPATH=/root/golang
@@ -21,19 +23,19 @@ echo 'export GOROOT="$GOPATH/local/go"' >> ~/.bashrc
 echo 'export PATH="$PATH:$GOPATH/local/go/bin"' >> ~/.bashrc
 ```
 
-## Install dependencies
+### Install dependencies
 
 ```shell
 go get go.etcd.io/etcd/clientv3 k8s.io/kubectl/pkg/scheme k8s.io/apimachinery/pkg/runtime
 ```
 
-## Build
+### Build
 
 ```shell
 go build -o etcdhelper etcdhelper.go
 ```
 
-## Using etcdhelper
+## Using
 
 ### Change service CIDR
 
