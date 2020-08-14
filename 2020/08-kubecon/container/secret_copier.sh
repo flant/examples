@@ -58,7 +58,11 @@ function sync_secret() {
 }
 
 function delete_secret() {
-  if context::jq -e --arg ns "$1" '.snapshots.src_namespace[] | select(.namespace == $ns)' ; then
+  if context::jq -e --arg ns "$1" '.snapshots.dst_secrets[].filterResult | select(.namespace == $ns)' ; then
+    if [[ "$1" == "default" ]]; then
+      return 0
+    fi
+
     kubectl -n "$1" delete secret "mysecret"
   fi
 }
