@@ -45,6 +45,6 @@ spec:
     spec:
       containers:
       - name: shell-operator
-        image: registry.mycompany.com/shell-operator:advanced
+        image: flant/shell-operator-kubecon:latest
         imagePullPolicy: Always
       serviceAccountName: kubecon-example
