@@ -38,12 +38,12 @@ function __main__() {
       packets_lost=1
     fi
 
-    cat > "$METRICS_PATH" <<END
+    cat >> "$METRICS_PATH" <<END
       {
         "name": "node_packets_lost",
         "add": $packets_lost,
         "labels": {
-          "node": $node_name
+          "node": "$node_name"
         }
       }
 END
