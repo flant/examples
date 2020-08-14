@@ -47,6 +47,6 @@ spec:
     spec:
       containers:
       - name: shell-operator
-        image: flant/shell-operator-kubecon:latest
+        image: flant/shell-operator-kubecon:master
         imagePullPolicy: Always
       serviceAccountName: kubecon-example
