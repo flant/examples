@@ -25,7 +25,7 @@ function __config__() {
       jqFilter: |
         {
           "namespace": .metadata.namespace,
-          "resourceVersion": .annotations."resourceVersion"
+          "resourceVersion": .metadata.annotations.resourceVersion
         }
       group: main
       keepFullObjectsInMemory: false
