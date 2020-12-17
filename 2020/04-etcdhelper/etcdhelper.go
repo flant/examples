@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.etcd.io/etcd/clientv3"
@@ -58,6 +59,21 @@ func main() {
 		}
 		os.Exit(1)
 	}
+	if flag.Arg(0) == "change-monitors-list" {
+		if flag.Arg(1) == "" || flag.Arg(2) == "" {
+			fmt.Fprint(os.Stderr, "ERROR: you have to specify both: PV name and list of comma-separated monitor IP-addresses\n")
+			os.Exit(1)
+		}
+		if !regexp.MustCompile(`^pvc-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$`).MatchString(flag.Arg(1)) {
+			fmt.Fprint(os.Stderr, "ERROR: invalid PV name. Ex: pvc-dd3afe18-1bae-411c-9a1d-df129847cb62")
+			os.Exit(1)
+		}
+		if !regexp.MustCompile(`^(((\d+\.){3}\d+):\d+,?)+$`).MatchString(flag.Arg(2)) {
+			fmt.Fprint(os.Stderr, "ERROR: invalid IP-address list. Ex: 1.1.1.1:6789,2.2.2.2:6789,3.3.3.3:6789\n")
+			os.Exit(1)
+		}
+	}
+
 	action := flag.Arg(0)
 	key := ""
 	if flag.NArg() > 1 {
@@ -100,6 +116,8 @@ func main() {
 		err = changeServiceCIDR(client, flag.Arg(1))
 	case "change-pod-cidr":
 		err = changePodCIDR(client, flag.Arg(1))
+	case "change-monitors-list":
+		err = changeMonitorsList(client, flag.Arg(1), flag.Arg(2))
 	case "dump":
 		err = dump(client)
 	default:
@@ -189,6 +207,35 @@ func changePodCIDR(client *clientv3.Client, cidr string) error {
 		if err != nil {
 			fmt.Printf("put to key %s %s\n", nodeKey, err)
 		}
+	}
+
+	return nil
+}
+
+func changeMonitorsList(client *clientv3.Client, pvName, list string) error {
+	decoder := scheme.Codecs.UniversalDeserializer()
+
+	pvKey := fmt.Sprintf("/registry/persistentvolumes/%s", pvName)
+
+	resp, err := clientv3.NewKV(client).Get(context.Background(), pvKey)
+	if err != nil {
+		fmt.Printf("get key %s %s\n", pvKey, err)
+	}
+
+	obj, _, _ := decoder.Decode(resp.Kvs[0].Value, nil, nil)
+
+	pv := obj.(*v1.PersistentVolume)
+
+	monitors := strings.Split(strings.Trim(list, ","), ",")
+	pv.Spec.RBD.CephMonitors = monitors
+
+	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
+	newObj := new(bytes.Buffer)
+	protoSerializer.Encode(obj, newObj)
+
+	_, err = clientv3.NewKV(client).Put(context.Background(), pvKey, newObj.String())
+	if err != nil {
+		fmt.Printf("put to key %s %s\n", pvKey, err)
 	}
 
 	return nil
