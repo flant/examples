@@ -34,6 +34,11 @@ etcdhelper binary will be created in the current directory. Use `GOOS=darwin` to
 ./etcdhelper -cacert /etc/kubernetes/pki/etcd/ca.crt -cert /etc/kubernetes/pki/etcd/server.crt -key /etc/kubernetes/pki/etcd/server.key -endpoint https://127.0.0.1:2379 change-pod-cidr 10.55.0.0/16
 ```
 
+### Change Ceph PV monitors list
+```shell
+./etcdhelper -cacert /etc/kubernetes/pki/etcd/ca.crt -cert /etc/kubernetes/pki/etcd/server.crt -key /etc/kubernetes/pki/etcd/server.key -endpoint https://127.0.0.1:2379 change-monitors-list pvc-d748b019-52be-4c0c-a928-44503ccd94ac 10.0.1.1:6789,10.0.1.2:6789,10.0.1.3:6789
+```
+
 # Status
 
 This enhanced version of etcdhelper is **PoC (proof of concept)**. Use it on your own risk.
