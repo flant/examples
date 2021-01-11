@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  config.yml: |
+    region: us-east-1
+    delay_seconds: 60
+    metrics:
+    - aws_namespace: AWS/NetworkELB
+      aws_metric_name: HealthyHostCount
+      aws_dimensions:
+      - LoadBalancer
+      - TargetGroup
+      aws_statistics:
+      - Sum
+      period_seconds: 60
+    - aws_namespace: AWS/RDS
+      aws_metric_name: DatabaseConnections
+      aws_dimensions:
+      - DBInstanceIdentifier
+      aws_statistics:
+      - Average
+      period_seconds: 60
+    - aws_namespace: AWS/RDS
+      aws_metric_name: FreeStorageSpace
+      aws_dimensions:
+      - DBInstanceIdentifier
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/RDS
+      aws_metric_name: BurstBalance
+      aws_dimensions:
+      - DBInstanceIdentifier
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/RDS
+      aws_metric_name: CPUCreditBalance
+      aws_dimensions:
+      - DBInstanceIdentifier
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/RDS
+      aws_metric_name: CPUSurplusCreditBalance
+      aws_dimensions:
+      - DBInstanceIdentifier
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/ElastiCache
+      aws_metric_name: FreeableMemory
+      aws_dimensions:
+      - CacheClusterId
+      - CacheNodeId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/ElastiCache
+      aws_metric_name: DatabaseMemoryUsagePercentage
+      aws_dimensions:
+      - CacheClusterId
+      - CacheNodeId
+      aws_statistics:
+      - Maximum
+      period_seconds: 300
+    - aws_namespace: AWS/ElastiCache
+      aws_metric_name: CPUUtilization
+      aws_dimensions:
+      - CacheClusterId
+      - CacheNodeId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/ElastiCache
+      aws_metric_name: CPUCreditBalance
+      aws_dimensions:
+      - CacheClusterId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/EBS
+      aws_metric_name: BurstBalance
+      aws_dimensions:
+      - VolumeId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/EC2
+      aws_metric_name: CPUCreditBalance
+      aws_dimensions:
+      - InstanceId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/EC2
+      aws_metric_name: CPUSurplusCreditBalance
+      aws_dimensions:
+      - InstanceId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/EC2
+      aws_metric_name: EBSByteBalance%
+      aws_dimensions:
+      - InstanceId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/EC2
+      aws_metric_name: EBSIOBalance%
+      aws_dimensions:
+      - InstanceId
+      aws_statistics:
+      - Average
+      period_seconds: 300
+    - aws_namespace: AWS/Billing
+      aws_dimensions:
+      - ServiceName
+      aws_metric_name: EstimatedCharges
+      aws_statistics:
+      - Average
+      range_seconds: 8640

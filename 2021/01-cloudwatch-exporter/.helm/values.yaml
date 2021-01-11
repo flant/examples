@@ -1,0 +1,24 @@
+---
+aws_access_key_id: PRODPRODPRODPRODPROD
+aws_secret_access_key: eideikuoBaeg1ohNeeyiezeej1Boeyo4
+
+region:
+  _default: eu-central-1
+  prod: eu-central-1
+
+replicas:
+  _default: 1
+
+resources:
+  requests:
+    cpu:
+      _default: 1m
+    memory:
+      _default: 256Mi
+
+env:
+  metric_today_daily_costs: "yes"
+  metric_yesterday_daily_costs: "yes"
+  query_period: "1800"
+  metric_today_daily_usage: "yes"
+  metric_today_daily_usage_norm: "yes"
