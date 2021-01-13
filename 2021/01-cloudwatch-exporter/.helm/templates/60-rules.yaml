@@ -1,0 +1,85 @@
+---
+apiVersion: deckhouse.io/v1alpha1
+kind: PrometheusRules
+metadata:
+  name: cloudwatch-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    prometheus: main
+    component: rules
+spec:
+  groups:
+  - name: custom.cloudwatch-alerts
+    rules:
+    - alert: ClickhouseLBTargetGroupIsUnhealthy
+      annotations:
+        description: |
+          Some hosts in target group {{`{{$labels.target_group}}`}} in cluster is unhealthy!
+        summary: Some hosts in target group {{`{{$labels.target_group}}`}} in cluster is unhealthy!
+      expr: |
+        aws_networkelb_healthy_host_count_sum{load_balancer=~".*clickhouse.*",target_group=~".*clickhouse.*"} < 3
+      for: 1m
+      labels:
+        severity_level: "4"
+    - alert: PostgresDiskSpaceUsage
+      annotations:
+        description: |
+          Free space on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is less than 5Gb!
+        summary: Free space on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is less than 5Gb!
+      expr: |
+        aws_rds_free_storage_space_average <= 5000000000
+      for: 5m
+      labels:
+        severity_level: "4"
+    - alert: PostgresCPUCreditBalance
+      annotations:
+        description: |
+          CPU credit balance on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is less than 100
+        summary: CPU credit balance on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is less than 100
+      expr: |
+        aws_rds_cpucredit_balance_average <= 100
+      for: 5m
+      labels:
+        severity_level: "4"
+    - alert: PostgresConnectionsUsage
+      annotations:
+        description: |
+          Connections usage on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is over 100
+        summary: Connections usage on database {{`{{$labels.dbinstance_identifier}}`}} in cluster is over 100
+      expr: |
+        aws_rds_database_connections_average > 100
+      for: 5m
+      labels:
+        severity_level: "4"
+    - alert: RedisMemoryUsageIsHigh
+      annotations:
+        description: |
+          Redis is using more than 80% of available memory.
+          Inform client or call him if he is not responding during 1 minute.
+        summary: Redis memory usage on {{`{{$labels.cache_cluster_id}}`}} in cluster is higher than 80%
+      expr: |
+        aws_elasticache_database_memory_usage_percentage_maximum > 80
+      for: 1m
+      labels:
+        severity_level: "4"
+    - alert: RedisCPUUsage
+      annotations:
+        description: |
+          Redis CPU utilization on {{`{{$labels.cache_cluster_id}}`}} in cluster is over than 60%
+        summary: Redis CPU utilization on {{`{{$labels.cache_cluster_id}}`}} in cluster is over than 60%
+      expr: |
+        aws_elasticache_cpuutilization_average >= 60
+      for: 5m
+      labels:
+        severity_level: "4"
+    - alert: EBS
+      annotations:
+        description: |
+          EBS IO balance {{`{{$labels.instance_id}}`}} in cluster is less than 80%.
+          Inform client or call him if he is not responding during 5 minute.
+        summary: EBS IO balance on {{`{{$labels.instance_id}}`}} in cluster is less than 80%
+      expr: |
+        aws_ec2_ebsiobalance__average < 80
+      for: 5m
+      labels:
+        severity_level: "3"

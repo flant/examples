@@ -1,0 +1,3 @@
+project: cloudwatch-exporter
+configVersion: 1
+---
