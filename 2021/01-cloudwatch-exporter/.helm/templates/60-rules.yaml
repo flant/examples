@@ -1,5 +1,5 @@
 ---
-apiVersion: deckhouse.io/v1alpha1
+apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRules
 metadata:
   name: cloudwatch-exporter
