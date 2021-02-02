@@ -5,7 +5,7 @@ talk by [Flant](https://flant.com/) during KubeCon + CloudNativeCon Europe 2020.
 
 You might be also interested in:
 * watching the [full video](https://www.youtube.com/watch?v=we0s4ETUBLc) of this talk;
-* reading a [shorter article](https://medium.com/flant-com/meet-the-shell-operator-kubecon-36c14ba2f8fe?source=friends_link&sk=a545f75ddb2e4787fd95da61f0bd241c) based on this talk 
+* reading a [shorter article](https://blog.flant.com/go-bash-meet-the-shell-operator/) based on this talk 
 (it has [its Russian version](https://habr.com/ru/company/flant/blog/519208/) as well);
 * downloading the [slides](https://speakerdeck.com/flant/go-bash-meet-the-shell-operator);
 * checking [shell-operator](https://github.com/flant/shell-operator) and [addon-operator](https://github.com/flant/addon-operator) GitHub repos.

@@ -5,7 +5,7 @@ Two new functions are introduced: `changeServiceCIDR` and `changePodCIDR`.
 
 This repo is intended to be used as a playground for a corresponding article:
 
-* «**[How to modify etcd data of your Kubernetes directly (without K8s API)](https://medium.com/flant-com/modifying-kubernetes-etcd-data-ed3d4bb42379)**».
+* «**[How to modify etcd data of your Kubernetes directly (without K8s API)](https://blog.flant.com/how-to-modify-etcd-data-of-your-kubernetes-directly-without-k8s-api/)**».
 * Russian version: «[Наш опыт работы с данными в etcd Kubernetes-кластера напрямую (без K8s API)](https://habr.com/ru/company/flant/blog/501956/)».
 
 # Using etcdhelper

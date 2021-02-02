@@ -5,7 +5,7 @@ in Kubernetes. It reads and prints data from config (`config.json`) as
 well as watches the modifications of this config via `fsnotify`.
 
 Intended to be used as a playground for a corresponding article:
-* «[ConfigMaps in Kubernetes: how they work and what you should remember](https://medium.com/flant-com/configmaps-in-kubernetes-f9f6d0081dcb?source=friends_link&sk=9f80b35eb17d9cc0d4c29e005834e560)».
+* «[ConfigMaps in Kubernetes: how they work and what you should remember](https://blog.flant.com/configmaps-in-kubernetes-how-they-work-and-what-you-should-remember/)».
 * Russian version: «[ConfigMaps в Kubernetes: нюансы, о которых стоит знать](https://habr.com/ru/company/flant/blog/498970/)».
 
 ## Deploying this chart

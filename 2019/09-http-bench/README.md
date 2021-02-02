@@ -1,4 +1,4 @@
-This repo demonstrates how a simple benchmark (written in Golang and built into Docker container) works against your HTTP server. More details are described in our [6 recent cases from our SRE workaday routine](https://medium.com/flant-com/6-sre-troubleshooting-cases-faf72ed36d6b?source=friends_link&sk=a72ed571f28327138c76edbbf5aab168) article (case #1).
+This repo demonstrates how a simple benchmark (written in Golang and built into Docker container) works against your HTTP server. More details are described in our [6 recent cases from our SRE workaday routine](https://blog.flant.com/troubleshooting-web-apps-issues-6-recent-cases-from-our-sres/) article (case #1).
 
 # How to use it
 

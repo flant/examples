@@ -4,7 +4,7 @@ Here are example YAML manifests to simplify deploying basic components for Kuber
 
 This repo is intended to be used as a playground for a corresponding article:
 
-* «**[Installing fully-fledged vanilla Kubernetes on Raspberry Pi](https://medium.com/flant-com/install-vanilla-kubernetes-raspberry-pi-b21895a51550)**».
+* «**[Installing fully-fledged vanilla Kubernetes on Raspberry Pi](https://blog.flant.com/installing-fully-fledged-vanilla-kubernetes-on-raspberry-pi/)**».
 * Russian version: «[Полноценный Kubernetes с нуля на Raspberry Pi](https://habr.com/ru/company/flant/blog/513908/)».
 
 ## Contents
