@@ -14,8 +14,8 @@ spec:
     - alert: ClickhouseLBTargetGroupIsUnhealthy
       annotations:
         description: |
-          Some hosts in target group {{`{{$labels.target_group}}`}} in cluster is unhealthy!
-        summary: Some hosts in target group {{`{{$labels.target_group}}`}} in cluster is unhealthy!
+          Some hosts in target group {{`{{$labels.target_group}}`}} in cluster are unhealthy!
+        summary: Some hosts in target group {{`{{$labels.target_group}}`}} in cluster are unhealthy!
       expr: |
         aws_networkelb_healthy_host_count_sum{load_balancer=~".*clickhouse.*",target_group=~".*clickhouse.*"} < 3
       for: 1m
