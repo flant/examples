@@ -10,30 +10,15 @@ This repo is intended to be used as a playground for a corresponding article:
 
 # Using etcdhelper
 
-## Building
+## Build
 
-### Install golang
-
-```shell
-GOPATH=/root/golang
-mkdir -p $GOPATH/local
-curl -sSL https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz | tar -xzvC $GOPATH/local
-echo "export GOPATH=\"$GOPATH\"" >> ~/.bashrc
-echo 'export GOROOT="$GOPATH/local/go"' >> ~/.bashrc
-echo 'export PATH="$PATH:$GOPATH/local/go/bin"' >> ~/.bashrc
-```
-
-### Install dependencies
+The fastest way is to use official golang image:
 
 ```shell
-go get go.etcd.io/etcd/clientv3 k8s.io/kubectl/pkg/scheme k8s.io/apimachinery/pkg/runtime
+docker run --rm -v $(pwd):/app -w /app -e CGO_ENABLED=0 -e GOOS=linux golang:1.15-alpine go build etcdhelper.go
 ```
 
-### Build
-
-```shell
-go build -o etcdhelper etcdhelper.go
-```
+etcdhelper binary will be created in the current directory. Use `GOOS=darwin` to build MacOS executable. 
 
 ## Using
 
