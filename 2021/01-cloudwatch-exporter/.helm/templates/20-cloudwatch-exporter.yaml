@@ -15,7 +15,6 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/01-config.yaml") . | sha256sum }}
     spec:
-      imagePullSecrets:
       containers:
       - name: cloudwatch-exporter
         image: prom/cloudwatch-exporter:cloudwatch_exporter-0.9.0
@@ -55,15 +54,3 @@ spec:
       - name: config
         configMap:
           name: config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: cloudwatch-exporter
-spec:
-  selector:
-    app: cloudwatch-exporter
-  ports:
-  - name: http-metrics
-    port: 9106
-    targetPort: 9106
