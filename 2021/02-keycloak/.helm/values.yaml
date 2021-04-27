@@ -151,6 +151,12 @@ extraEnv: |
      value: "2"
    - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
      value: "2"
+   - name: JGROUPS_DISCOVERY_PROTOCOL
+     value: "dns.DNS_PING"
+   - name: JGROUPS_DISCOVERY_PROPERTIES
+     value: "dns_query={{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+   - name: JGROUPS_DISCOVERY_QUERY
+     value: "{{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
 
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: ""
