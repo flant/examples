@@ -1,4 +1,5 @@
 {{- define "envs" }}
+{{- $highAvailability := gt (int .Values.replicas) 1 }}
 - name: POD_NAME
   valueFrom:
     fieldRef:
@@ -31,4 +32,13 @@
   value: "{{ pluck .Values.global.env .Values.infinispan.host | first | default (printf .Values.infinispan.host._default .Values.global.env) }}"
 - name: JAVA_OPTS
   value: "{{ pluck .Values.global.env .Values.java | first | default .Values.java._default }}"
+{{- if $highAvailability }}
+- name: JGROUPS_DISCOVERY_PROTOCOL1
+  value: "dns.DNS_PING"
+- name: JGROUPS_DISCOVERY_PROPERTIES1
+  value: "dns_query={{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+- name: JGROUPS_DISCOVERY_QUERY
+  value: "{{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end }}
+  
 {{- end }}

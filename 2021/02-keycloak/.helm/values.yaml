@@ -1,6 +1,14 @@
 db:
   host: 
     _default: "cockroachdb-%s-public.cockroachdb-%s"
+  password:
+    _default: "pass123"
+    production: "PaSS123+"
+
+keycloak:
+  password:
+    _default: "pass123"
+    production: "PaSS123+"
 
 infinispan:
   host: 
@@ -384,15 +392,6 @@ prometheusRule:
   #   for: 5m
   #   labels:
   #     severity: warning
-
-keycloak:
-  password:
-    _default: "pass123"
-    production: "PaSS123+"
-db:
-  password:
-    _default: "pass123"
-    production: "PaSS123+"
 ca:
   crt:
     _default: base64_representation_of_ca.crt

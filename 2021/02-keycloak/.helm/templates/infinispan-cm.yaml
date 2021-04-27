@@ -28,15 +28,11 @@ data:
         <jgroups>
             <stack name="image-tcp" extends="tcp">
                 <TCP bind_addr="${env.POD_IP}" bind_port="${jgroups.bind.port,jgroups.tcp.port:7800}" enable_diagnostics="false"/>
-                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}"
-                              dns_record_type="A"
-                              stack.combine="REPLACE" stack.position="MPING"/>
+                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}" dns_record_type="A" stack.combine="REPLACE" stack.position="MPING"/>
             </stack>
             <stack name="image-udp" extends="udp">
                 <UDP enable_diagnostics="false" port_range="0" />
-                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}"
-                              dns_record_type="A"
-                              stack.combine="REPLACE" stack.position="PING"/>
+                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}" dns_record_type="A" stack.combine="REPLACE" stack.position="PING"/>
                 <FD_SOCK client_bind_port="57600" start_port="57600"/>
             </stack>
         </jgroups>
@@ -48,9 +44,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false"  create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -63,9 +57,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -78,9 +70,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -93,9 +83,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -108,9 +96,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -123,9 +109,7 @@ data:
                <persistence passivation="false">
                    <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
                        <jdbc:data-source jndi-url="jdbc/datasource"/>
-                       <jdbc:string-keyed-table drop-on-exit="false"
-                                     create-on-start="true"
-                                     prefix="ispn">
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
                            <jdbc:id-column name="id" type="VARCHAR(255)"/>
                            <jdbc:data-column name="datum" type="BYTEA"/>
                            <jdbc:timestamp-column name="version" type="BIGINT"/>
@@ -148,8 +132,7 @@ data:
                 <security-realms>
                     <security-realm name="default">
                         <properties-realm groups-attribute="Roles">
-                            <user-properties path="users.properties" relative-to="infinispan.server.config.path"
-                                             plain-text="true"/>
+                            <user-properties path="users.properties" relative-to="infinispan.server.config.path" plain-text="true"/>
                             <group-properties path="groups.properties" relative-to="infinispan.server.config.path"/>
                         </properties-realm>
                     </security-realm>

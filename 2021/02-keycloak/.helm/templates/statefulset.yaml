@@ -74,14 +74,6 @@ spec:
           {{- end }}
           env:
 {{- include "envs" . | indent 12 }}
-            {{- if $highAvailability }}
-            - name: JGROUPS_DISCOVERY_PROTOCOL1
-              value: "dns.DNS_PING"
-            - name: JGROUPS_DISCOVERY_PROPERTIES1
-              value: "dns_query={{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
-            - name: JGROUPS_DISCOVERY_QUERY
-              value: "{{ template "keycloak.fullname". }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
-            {{- end }}
             {{- if .Values.postgresql.enabled }}
             - name: DB_VENDOR
               value: postgres

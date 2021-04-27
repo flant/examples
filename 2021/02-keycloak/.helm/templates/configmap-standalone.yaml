@@ -7,7 +7,6 @@ metadata:
 data:
   standalone.xml: |-
     <?xml version='1.0' encoding='UTF-8'?>
-    
     <server xmlns="urn:jboss:domain:14.0">
         <extensions>
             <extension module="org.jboss.as.clustering.infinispan"/>
@@ -145,14 +144,6 @@ data:
             <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
             <subsystem xmlns="urn:jboss:domain:datasources:6.0">
                 <datasources>
-                    <!--datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                        <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                        <driver>h2</driver>
-                        <security>
-                            <user-name>sa</user-name>
-                            <password>sa</password>
-                        </security>
-                    </datasource -->
                     <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" use-ccm="true">
                         <connection-url>jdbc:postgresql://${env.DB_ADDR:postgres}/${env.DB_DATABASE:keycloak}${env.JDBC_PARAMS:}</connection-url>
                         <driver>postgresql</driver>
@@ -170,9 +161,6 @@ data:
                         </validation>
                     </datasource>
                     <drivers>
-                        <!--driver name="h2" module="com.h2database.h2">
-                            <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                        </driver -->
                         <driver name="postgresql" module="org.postgresql.jdbc">
                             <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
                         </driver>
@@ -728,7 +716,7 @@ data:
             <socket-binding name="txn-recovery-environment" port="4712"/>
             <socket-binding name="txn-status-manager" port="4713"/>
             <outbound-socket-binding name="remote-cache">
-                <remote-destination host="${env.INFINISPAN_SERVER}" port="11222"/>  
+                <remote-destination host="${env.INFINISPAN_SERVER}" port="11222"/>
             </outbound-socket-binding>
             <outbound-socket-binding name="mail-smtp">
                 <remote-destination host="${jboss.mail.server.host:localhost}" port="${jboss.mail.server.port:25}"/>
