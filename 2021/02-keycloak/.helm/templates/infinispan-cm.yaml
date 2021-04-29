@@ -1,0 +1,162 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infinispan
+data:
+  config.yaml: |-
+    jgroups:
+      transport: tcp
+      dnsPing:
+        query: infinispan-headless.keycloak-stand.svc.cluster.local
+    infinispan:
+      clusterName: infinispan
+      zeroCapacityNode: false
+      locks:
+        owners: -1
+        reliability: consistent  
+
+  infinispan.xml: |-
+    <infinispan
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:infinispan:config:12.0 https://infinispan.org/schemas/infinispan-config-12.0.xsd
+                                urn:infinispan:server:12.0 https://infinispan.org/schemas/infinispan-server-12.0.xsd
+                                urn:infinispan:config:clustered-locks:12.0 https://infinispan.org/schemas/infinispan-clustered-locks-config-12.0.xsd
+                                urn:org:jgroups https://www.jgroups.org/schema/jgroups-4.2.xsd"
+            xmlns="urn:infinispan:config:12.0"
+            xmlns:server="urn:infinispan:server:12.0"
+            xmlns:locks="urn:infinispan:config:clustered-locks:12.0">
+        <jgroups>
+            <stack name="image-tcp" extends="tcp">
+                <TCP bind_addr="${env.POD_IP}" bind_port="${jgroups.bind.port,jgroups.tcp.port:7800}" enable_diagnostics="false"/>
+                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}" dns_record_type="A" stack.combine="REPLACE" stack.position="MPING"/>
+            </stack>
+            <stack name="image-udp" extends="udp">
+                <UDP enable_diagnostics="false" port_range="0" />
+                <dns.DNS_PING dns_address="" dns_query="${env.INFINISPAN_SERVER}" dns_record_type="A" stack.combine="REPLACE" stack.position="PING"/>
+                <FD_SOCK client_bind_port="57600" start_port="57600"/>
+            </stack>
+        </jgroups>
+        <cache-container name="default" statistics="true" zero-capacity-node="false">
+            <transport cluster="${infinispan.cluster.name:infinispan}" node-name="${infinispan.node.name:}" stack="image-tcp"/>
+            <locks:clustered-locks num-owners="-1" reliability="CONSISTENT"/>
+            <distributed-cache name="authenticationSessions" owners="${env.CACHE_OWNERS_AUTH_SESSIONS_COUNT:2}" />
+            <distributed-cache name="clientSessions" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false"  create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                   </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+            <distributed-cache name="offlineSessions" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                   </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+            <distributed-cache name="sessions" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                    </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+            <distributed-cache name="offlineClientSessions" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                    </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+            <distributed-cache name="loginFailures" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                    </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+            <distributed-cache name="actionTokens" owners="${env.CACHE_OWNERS_COUNT:1}" xmlns:jdbc="urn:infinispan:config:store:jdbc:12.0">
+               <persistence passivation="false">
+                   <jdbc:string-keyed-jdbc-store fetch-state="false" shared="true" preload="false">
+                       <jdbc:data-source jndi-url="jdbc/datasource"/>
+                       <jdbc:string-keyed-table drop-on-exit="false" create-on-start="true" prefix="ispn">
+                           <jdbc:id-column name="id" type="VARCHAR(255)"/>
+                           <jdbc:data-column name="datum" type="BYTEA"/>
+                           <jdbc:timestamp-column name="version" type="BIGINT"/>
+                           <jdbc:segment-column name="S" type="INT"/>
+                       </jdbc:string-keyed-table>
+                    </jdbc:string-keyed-jdbc-store>
+               </persistence>
+            </distributed-cache>
+        </cache-container>
+        <server xmlns="urn:infinispan:server:12.0">
+            <interfaces>
+                <interface name="public">
+                    <inet-address value="${env.POD_IP}"/>
+                </interface>
+            </interfaces>
+            <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
+                <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
+            </socket-bindings>
+            <security>
+                <security-realms>
+                    <security-realm name="default">
+                        <properties-realm groups-attribute="Roles">
+                            <user-properties path="users.properties" relative-to="infinispan.server.config.path" plain-text="true"/>
+                            <group-properties path="groups.properties" relative-to="infinispan.server.config.path"/>
+                        </properties-realm>
+                    </security-realm>
+                </security-realms>
+            </security>
+            <data-sources>
+              <data-source name="ds" jndi-name="jdbc/datasource" statistics="true">
+                  <connection-factory driver="org.postgresql.Driver" username="${env.DB_USER:keycloak}" password="${env.DB_PASSWORD:password}" url="jdbc:postgresql://${env.DB_ADDR:postgres}:${env.DB_PORT:26257}/${env.DB_DATABASE:keycloak}${env.JDBC_PARAMS_IS:}" new-connection-sql="SELECT 1" transaction-isolation="READ_COMMITTED">
+                    <connection-property name="name">value</connection-property>
+                  </connection-factory>
+                  <connection-pool initial-size="1" max-size="10"  min-size="3" background-validation="1000" idle-removal="1" blocking-timeout="1000" leak-detection="10000"/>
+              </data-source>
+            </data-sources>
+            <endpoints socket-binding="default">
+                <hotrod-connector name="hotrod"/>
+                <rest-connector name="rest"/>
+            </endpoints>
+            <!-- endpoints socket-binding="default" security-realm="default">
+                <hotrod-connector>
+                    <authentication>
+                        <sasl qop="auth" server-name="infinispan"/>
+                    </authentication>
+                </hotrod-connector>
+                <rest-connector />
+            </endpoints -->
+        </server>
+    </infinispan>

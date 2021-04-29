@@ -1,0 +1,36 @@
+configVersion: 1
+project: keycloak
+deploy:
+  helmRelease: "[[ project ]]-[[ env ]]"
+  namespace: "[[ project ]]-[[ env ]]"
+---
+image: openssl
+from: alpine:3.12
+ansible:
+  beforeInstall:
+  - name: "Install packages"
+    apk:
+      name: 
+      - openssl
+---
+image: keycloak
+from: jboss/keycloak:12.0.4
+git:
+- add: /jar/keycloak-model-jpa-12.0.4.jar
+  to: /opt/jboss/keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-model-jpa/main/keycloak-model-jpa-12.0.4.jar
+- add: /jar/keycloak-metrics-spi-2.2.0.jar
+  to: /opt/jboss/keycloak/standalone/deployments/keycloak-metrics-spi-2.2.0.jar
+shell:
+  setup: |
+    chown -R jboss:root /opt/jboss/keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-model-jpa/main/
+    chown -R jboss:root /opt/jboss/keycloak/standalone/deployments/
+    touch /opt/jboss/keycloak/standalone/deployments/keycloak-metrics-spi-2.2.0.jar.dodeploy
+---
+image: infinispan
+from: infinispan/server:12.0
+git:
+- add: /jar/postgresql-42.2.19.jar
+  to: /opt/infinispan/server/lib/postgresql-42.2.19.jar
+shell:
+  setup: |
+    chown -R 185:root /opt/infinispan/server/lib/
