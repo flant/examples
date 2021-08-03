@@ -24,13 +24,6 @@ data:
       "pools": {
         "A": {
           "servers": [
-            // for add,delete,set - all memcache hosts
-            '$servers'
-          ]
-        },
-        "B": {
-          "servers": [
-            // for get - nearest memcachehost + reserved
             '$servers'
           ]
         }
@@ -38,10 +31,10 @@ data:
       "route": {
         "type": "OperationSelectorRoute",
         "operation_policies": {
-          "add": "AllFastestRoute|Pool|A",
-          "delete": "AllFastestRoute|Pool|A",
-          "get": "FailoverRoute|Pool|B",
-          "set": "AllFastestRoute|Pool|A"
+          "add": "AllSyncRoute|Pool|A",
+          "delete": "AllSyncRoute|Pool|A",
+          "get": "FailoverRoute|Pool|A",
+          "set": "AllSyncRoute|Pool|A"
         }
       }
     }
@@ -66,9 +59,8 @@ data:
         echo "No changes for nodes."
         exit 0;
     else
-        echo "Nodes list was changed..."
+        echo "Node list was changed."
         mv $check_path $config_path
-        # reload config?
         echo "mcrouter is reconfigured."
     fi
 
