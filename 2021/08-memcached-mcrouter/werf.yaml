@@ -7,7 +7,7 @@ deploy:
 image: memcached
 from: memcached:1.6.8
 ---
-image: memcached-exporter
+image: memcached_exporter
 from: quay.io/prometheus/memcached-exporter:v0.8.0
 ---
 image: mcrouter

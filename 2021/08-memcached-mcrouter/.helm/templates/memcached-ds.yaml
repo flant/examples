@@ -57,7 +57,7 @@ spec:
             fieldRef:
               fieldPath: status.hostIP
       - name: exporter
-        image: {{ .Values.werf.image.memcached-exporter }}
+        image: {{ .Values.werf.image.memcached_exporter }}
         command:
         - /bin/sh
         - -c
