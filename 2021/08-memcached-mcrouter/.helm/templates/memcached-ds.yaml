@@ -17,19 +17,16 @@ spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/node
-              operator: Exists
-            weight: 50
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/node
+                operator: Exists
       imagePullSecrets:
       - name: "registrysecret"
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
       hostNetwork: true
       containers:
       - name: memcached
-{{ tuple "memcached" . | include "werf_container_image" | indent 8 }}
+        image: {{ .Values.werf.image.memcached }}
         command:
         - /bin/bash
         - -c
@@ -59,9 +56,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
-{{ tuple "memcached" . | include "werf_container_env" | indent 8 }}
       - name: exporter
-{{ tuple "memcached-exporter" . | include "werf_container_image" | indent 8 }}
+        image: {{ .Values.werf.image.memcached-exporter }}
         command:
         - /bin/sh
         - -c
@@ -77,7 +73,6 @@ spec:
           limits:
             memory: {{ pluck .Values.global.env .Values.memcached_exporter.resources.limits.memory | first | default .Values.memcached_exporter.resources.limits.memory._default }}
         env:
-{{ tuple "memcached-exporter" . | include "werf_container_env" | indent 8 }}
         - name: HOST_IP
           valueFrom:
             fieldRef:
