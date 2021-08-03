@@ -1,0 +1,82 @@
+configVersion: 1
+project: memcached
+deploy:
+ helmRelease: "[[ project ]]-[[ env ]]"
+ namespace: "[[ env ]]"
+---
+image: memcached
+from: memcached:1.6.8
+---
+image: memcached-exporter
+from: quay.io/prometheus/memcached-exporter:v0.8.0
+---
+image: mcrouter
+from: ubuntu:18.04
+mount:
+- from: tmp_dir
+  to: /var/lib/apt/lists
+ansible:
+ beforeInstall:
+ - name: Install prerequisites
+   apt:
+     name:
+     - apt-transport-https
+     - apt-utils
+     - dnsutils
+     - gnupg
+     - tzdata
+     - locales
+     update_cache: yes
+ - name: Add mcrouter APT key
+   apt_key:
+     url: https://facebook.github.io/mcrouter/debrepo/bionic/PUBLIC.KEY
+ - name: Add mcrouter Repo
+   apt_repository:
+     repo: deb https://facebook.github.io/mcrouter/debrepo/bionic bionic contrib
+     filename: mcrouter
+     update_cache: yes
+ - name: Set timezone
+   timezone:
+     name: "Europe/Moscow"
+ - name: Ensure a locale exists
+   locale_gen:
+     name: en_US.UTF-8
+     state: present
+ install:
+ - name: Install mcrouter
+   apt:
+     name:
+     - mcrouter
+---
+image: cron
+from: ubuntu:18.04
+ansible:
+  beforeInstall:
+  - name: Install prerequisites
+    apt:
+      name:
+      - apt-transport-https
+      - apt-utils
+      - dnsutils
+      - gnupg
+      - tzdata
+      - locales
+      update_cache: yes
+  - name: Set timezone
+    timezone:
+      name: "Europe/Moscow"
+  - name: Ensure a locale exists
+    locale_gen:
+      name: en_US.UTF-8
+      state: present
+  install:
+  - name: "Install supercronic"
+    get_url:
+      url: https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64
+      dest: /usr/local/bin/supercronic
+      mode: 0755
+  - name: "Install dumb-init"
+    get_url:
+      url: https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
+      dest: /usr/local/bin/dumb-init
+      mode: 0755

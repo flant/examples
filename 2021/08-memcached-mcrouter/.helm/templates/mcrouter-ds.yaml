@@ -1,0 +1,148 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mcrouter
+  labels:
+    app: mcrouter
+spec:
+  selector:
+    matchLabels:
+      app: mcrouter
+  template:
+    metadata:
+      labels:
+        app: mcrouter
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/05-cm-mcrouter.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/node
+              operator: Exists
+            weight: 50
+      imagePullSecrets:
+      - name: "registrysecret"
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      hostNetwork: true
+      initContainers:
+      - name: init
+        command: ['bash', '-c', '/mnt/config/config_generator.sh /mnt/config/config.json']
+{{ tuple "mcrouter" . | include "werf_container_image" | indent 8 }}
+        volumeMounts:
+        - name: mcrouter
+          mountPath: /mnt/config/config_generator.sh
+          subPath: config_generator.sh
+        - name: config
+          mountPath: /mnt/config
+        env:
+{{ tuple "mcrouter" . | include "werf_container_env" | indent 8 }}
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+      shareProcessNamespace: true
+      containers:
+      - name: mcrouter
+{{ tuple "mcrouter" . | include "werf_container_image" | indent 8 }}
+        command:
+        - /bin/bash
+        - -c
+        - --
+        - mcrouter --listen-addresses=$HOST_IP --port={{ pluck .Values.global.env .Values.mcrouter.port | first | default .Values.mcrouter.port._default }} --config-file=/mnt/config/config.json --stats-root=/mnt/config/
+        securityContext:
+          capabilities:
+            add:
+            - SYS_PTRACE
+        volumeMounts:
+        - name: config
+          mountPath: /mnt/config
+        ports:
+        - name: mcr-{{ .Values.global.env }}
+          containerPort: {{ pluck .Values.global.env .Values.mcrouter.port | first | default .Values.mcrouter.port._default }}
+        livenessProbe:
+          tcpSocket:
+            port: mcr-{{ .Values.global.env }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: mcr-{{ .Values.global.env }}
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "/bin/bash", "-c", "sleep 5; kill -QUIT $(pidof mcrouter)" ]
+        resources:
+          requests:
+            cpu: {{ pluck .Values.global.env .Values.mcrouter.resources.requests.cpu | first | default .Values.mcrouter.resources.requests.cpu._default }}
+            memory: {{ pluck .Values.global.env .Values.mcrouter.resources.requests.memory | first | default .Values.mcrouter.resources.requests.memory._default }}
+          limits:
+            memory: {{ pluck .Values.global.env .Values.mcrouter.resources.limits.memory | first | default .Values.mcrouter.resources.limits.memory._default }}
+        env:
+{{ tuple "mcrouter" . | include "werf_container_env" | indent 8 }}
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+      - name: cron
+{{ tuple "cron" . | include "werf_container_image" | indent 8 }}
+        command: ['/usr/local/bin/dumb-init', '/bin/sh', '-c', '/usr/local/bin/supercronic -json /app/crontab']
+        workingDir: /app
+        securityContext:
+          capabilities:
+            add:
+            - SYS_PTRACE
+        volumeMounts:
+        - name: mcrouter
+          mountPath: /mnt/config/config_generator.sh
+          subPath: config_generator.sh
+        - name: mcrouter
+          mountPath: /mnt/config/check_nodes.sh
+          subPath: check_nodes.sh
+        - name: mcrouter
+          mountPath: /app/crontab
+          subPath: crontab
+        - name: config
+          mountPath: /mnt/config
+        resources:
+          limits:
+            memory: {{ pluck .Values.global.env .Values.mcrouter_cron.resources.limits.memory | first | default .Values.mcrouter_cron.resources.limits.memory._default}}
+          requests:
+            memory: {{ pluck .Values.global.env .Values.mcrouter_cron.resources.requests.memory | first | default .Values.mcrouter_cron.resources.requests.memory._default }}
+            cpu: {{ pluck .Values.global.env .Values.mcrouter_cron.resources.requests.cpu | first | default .Values.mcrouter_cron.resources.requests.cpu._default }}
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "/bin/bash", "-c", "sleep 5; kill -QUIT $(pidof dumb-init)" ]
+        env:
+{{ tuple "crons" . | include "werf_container_env" | indent 8 }}
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+      volumes:
+      - configMap:
+          defaultMode: 0777
+          name: mcrouter
+        name: mcrouter
+      - name: config
+        emptyDir: {}
+
+---
+apiVersion: autoscaling.k8s.io/v1beta2
+kind: VerticalPodAutoscaler
+metadata:
+  name: mcrouter
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: DaemonSet
+    name: mcrouter
+  updatePolicy:
+    updateMode: "Off"

@@ -1,0 +1,113 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mc
+  labels:
+    app: mc
+spec:
+  selector:
+    matchLabels:
+      app: mc
+  template:
+    metadata:
+      labels:
+        app: mc
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/node
+              operator: Exists
+            weight: 50
+      imagePullSecrets:
+      - name: "registrysecret"
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      hostNetwork: true
+      containers:
+      - name: memcached
+{{ tuple "memcached" . | include "werf_container_image" | indent 8 }}
+        command:
+        - /bin/bash
+        - -c
+        - --
+        - memcached --listen=$HOST_IP --port={{ pluck .Values.global.env .Values.memcached.port | first | default .Values.memcached.port._default }} --memory-limit={{ pluck .Values.global.env .Values.memcached.memory_limit | first | default .Values.memcached.memory_limit._default }} -o modern v --conn-limit=4096 -u memcache
+        ports:
+        - name: mc-{{ .Values.global.env }}
+          containerPort: {{ pluck .Values.global.env .Values.memcached.port | first | default .Values.memcached.port._default }}
+        livenessProbe:
+          tcpSocket:
+            port: mc-{{ .Values.global.env }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: mc-{{ .Values.global.env }}
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: {{ pluck .Values.global.env .Values.memcached.resources.requests.cpu | first | default .Values.memcached.resources.requests.cpu._default }}
+            memory: {{ pluck .Values.global.env .Values.memcached.resources.requests.memory | first | default .Values.memcached.resources.requests.memory._default }}
+          limits:
+            memory: {{ pluck .Values.global.env .Values.memcached.resources.limits.memory | first | default .Values.memcached.resources.limits.memory._default }}
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+{{ tuple "memcached" . | include "werf_container_env" | indent 8 }}
+      - name: exporter
+{{ tuple "memcached-exporter" . | include "werf_container_image" | indent 8 }}
+        command:
+        - /bin/sh
+        - -c
+        - --
+        - /bin/memcached_exporter --memcached.address=$HOST_IP:{{ pluck .Values.global.env .Values.memcached.port | first | default .Values.memcached.port._default }} --web.listen-address="$HOST_IP:{{ pluck .Values.global.env .Values.memcached_exporter.port | first | default .Values.memcached_exporter.port._default }}"
+        ports:
+        - containerPort: {{ pluck .Values.global.env .Values.memcached_exporter.port | first | default .Values.memcached_exporter.port._default }}
+          name: metr-{{ .Values.global.env }}
+        resources:
+          requests:
+            cpu: {{ pluck .Values.global.env .Values.memcached_exporter.resources.requests.cpu | first | default .Values.memcached_exporter.resources.requests.cpu._default }}
+            memory: {{ pluck .Values.global.env .Values.memcached_exporter.resources.requests.memory | first | default .Values.memcached_exporter.resources.requests.memory._default }}
+          limits:
+            memory: {{ pluck .Values.global.env .Values.memcached_exporter.resources.limits.memory | first | default .Values.memcached_exporter.resources.limits.memory._default }}
+        env:
+{{ tuple "memcached-exporter" . | include "werf_container_env" | indent 8 }}
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mc
+  labels:
+    prometheus.deckhouse.io/target: memcached
+spec:
+  selector:
+    app: mc
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - name: mc-{{ .Values.global.env }}
+    port: {{ pluck .Values.global.env .Values.memcached.port | first | default .Values.memcached.port._default }}
+  - name: http-metrics
+    port: {{ pluck .Values.global.env .Values.memcached_exporter.port | first | default .Values.memcached_exporter.port._default }}
+---
+apiVersion: autoscaling.k8s.io/v1beta2
+kind: VerticalPodAutoscaler
+metadata:
+  name: mc
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: DaemonSet
+    name: mc
+  updatePolicy:
+    updateMode: "Off"

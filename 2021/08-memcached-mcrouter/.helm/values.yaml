@@ -1,0 +1,66 @@
+memcached:
+  host:
+    _default: mc
+  port:
+    _default: Do not use same ports in the HostNetwork!
+    test: "11212"
+    production: "30213"
+  use:
+    _default: "true"
+  memory_limit:
+    _default: 200
+    production: 2048
+  resources:
+    requests:
+      cpu:
+        _default: 10m
+        production: 100m
+      memory:
+        _default: 256Mi
+        production: 2560Mi
+    limits:
+      memory:
+        _default: 256Mi
+        production: 2560Mi
+
+mcrouter:
+  port:
+    _default: Do not use same ports in the HostNetwork!
+    test: "21212"
+    production: "31213"
+  resources:
+    requests:
+      cpu:
+        _default: 10m
+        production: 300m
+      memory:
+        _default: 100Mi
+    limits:
+      memory:
+        _default: 100Mi
+
+mcrouter_cron:
+  resources:
+    requests:
+      cpu:
+        _default: 5m
+      memory:
+        _default: 64Mi
+    limits:
+      memory:
+        _default: 64Mi
+
+memcached_exporter:
+  port:
+    _default: Do not use same ports in the HostNetwork!
+    test: "30150"
+    production: "9150"
+  resources:
+    requests:
+      cpu:
+        _default: 50m
+      memory:
+        _default: 100Mi
+    limits:
+      memory:
+        _default: 100Mi

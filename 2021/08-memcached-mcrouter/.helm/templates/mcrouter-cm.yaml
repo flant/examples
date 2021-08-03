@@ -1,0 +1,77 @@
+{{- $port := (pluck .Values.global.env .Values.memcached.port | first | default .Values.memcached.port._default ) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcrouter
+data:
+  config_generator.sh: |
+    #!/bin/bash
+    set -e
+
+    config_path=$1;
+    if [ -z "${config_path}" ]; then echo "config_path isn't specified"; exit 1; fi
+
+    function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
+
+    mapfile -t ips < <( host mc.{{ .Values.global.env }}.svc.cluster.local 10.222.0.10 | grep mc.{{ .Values.global.env }}.svc.cluster.local | awk '{ print $4; }' | sort | grep -v $HOST_IP )
+
+    delimiter='{{ printf ":%s\",\"" $port }}'
+
+    servers='"'$(join_by $delimiter $HOST_IP "${ips[@]}")':{{ $port }}"'
+
+    cat <<< '{
+      "pools": {
+        "A": {
+          "servers": [
+            // for add,delete,set - all memcache hosts
+            '$servers'
+          ]
+        },
+        "B": {
+          "servers": [
+            // for get - nearest memcachehost + reserved
+            '$servers'
+          ]
+        }
+      },
+      "route": {
+        "type": "OperationSelectorRoute",
+        "operation_policies": {
+          "add": "AllFastestRoute|Pool|A",
+          "delete": "AllFastestRoute|Pool|A",
+          "get": "FailoverRoute|Pool|B",
+          "set": "AllFastestRoute|Pool|A"
+        }
+      }
+    }
+    ' > $config_path
+
+  check_nodes.sh: |
+    #!/usr/bin/env bash
+    set -e
+
+    config_path=$1;
+    if [ -z "${config_path}" ]; then echo "config_path isn't specified"; exit 1; fi
+
+    check_path="${config_path}.check"
+
+    checksum1=$(md5sum $config_path | awk '{print $1;}')
+
+    /mnt/config/config_generator.sh $check_path
+
+    checksum2=$(md5sum $check_path | awk '{print $1;}')
+
+    if [[ $checksum1 == $checksum2 ]]; then
+        echo "No changes for nodes."
+        exit 0;
+    else
+        echo "Nodes list was changed..."
+        mv $check_path $config_path
+        # reload config?
+        echo "mcrouter is reconfigured."
+    fi
+
+  crontab: |
+    # Check nodes in cluster
+    */10 * * * * * *   /mnt/config/check_nodes.sh /mnt/config/config.json
