@@ -18,7 +18,7 @@ The fastest way is to use official golang image:
 docker run --rm -v $(pwd):/app -w /app -e CGO_ENABLED=0 -e GOOS=linux golang:1.15-alpine go build etcdhelper.go
 ```
 
-etcdhelper binary will be created in the current directory. Use `GOOS=darwin` to build MacOS executable. 
+etcdhelper binary will be created in the current directory. Use `GOOS=darwin` to build MacOS executable.
 
 ## Using
 
@@ -40,6 +40,14 @@ This feature was added later (#15), thus it was not mentioned in the original ar
 
 ```shell
 ./etcdhelper -cacert /etc/kubernetes/pki/etcd/ca.crt -cert /etc/kubernetes/pki/etcd/server.crt -key /etc/kubernetes/pki/etcd/server.key -endpoint https://127.0.0.1:2379 change-monitors-list pvc-d748b019-52be-4c0c-a928-44503ccd94ac 10.0.1.1:6789,10.0.1.2:6789,10.0.1.3:6789
+```
+
+### Remove NodeAffinity from PersistentVolume
+
+This feature was added later (#15), thus it was not mentioned in the original article.
+
+```shell
+./etcdhelper -cacert /etc/kubernetes/pki/etcd/ca.crt -cert /etc/kubernetes/pki/etcd/server.crt -key /etc/kubernetes/pki/etcd/server.key -endpoint https://127.0.0.1:2379 remove-node-affinity-from-pv pvc-d748b019-52be-4c0c-a928-44503ccd94ac
 ```
 
 # Status

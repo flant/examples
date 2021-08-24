@@ -118,6 +118,8 @@ func main() {
 		err = changePodCIDR(client, flag.Arg(1))
 	case "change-monitors-list":
 		err = changeMonitorsList(client, flag.Arg(1), flag.Arg(2))
+	case "remove-node-affinity-from-pv":
+		err = removeNodeAffinityFromPersistentVolume(client, key)
 	case "dump":
 		err = dump(client)
 	default:
@@ -232,6 +234,37 @@ func changeMonitorsList(client *clientv3.Client, pvName, list string) error {
 	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
 	newObj := new(bytes.Buffer)
 	protoSerializer.Encode(obj, newObj)
+
+	_, err = clientv3.NewKV(client).Put(context.Background(), pvKey, newObj.String())
+	if err != nil {
+		fmt.Printf("put to key %s %s\n", pvKey, err)
+	}
+
+	return nil
+}
+
+func removeNodeAffinityFromPersistentVolume(client *clientv3.Client, pvName string) error {
+	decoder := scheme.Codecs.UniversalDeserializer()
+
+	pvKey := fmt.Sprintf("/registry/persistentvolumes/%s", pvName)
+
+	resp, err := clientv3.NewKV(client).Get(context.Background(), pvKey)
+	if err != nil {
+		fmt.Printf("get key %s %s\n", pvKey, err)
+	}
+
+	obj, _, _ := decoder.Decode(resp.Kvs[0].Value, nil, nil)
+
+	pv := obj.(*v1.PersistentVolume)
+
+	pv.Spec.NodeAffinity = nil
+
+	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
+	newObj := new(bytes.Buffer)
+	err = protoSerializer.Encode(obj, newObj)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	_, err = clientv3.NewKV(client).Put(context.Background(), pvKey, newObj.String())
 	if err != nil {
