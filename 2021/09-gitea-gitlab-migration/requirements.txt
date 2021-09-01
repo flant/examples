@@ -1,0 +1,4 @@
+giteapy
+python-gitlab
+requests
+bs4
