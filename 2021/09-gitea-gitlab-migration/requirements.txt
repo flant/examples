@@ -1,0 +1,5 @@
+giteapy
+python-gitlab
+requests
+bs4
+selenium
