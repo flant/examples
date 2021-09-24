@@ -23,7 +23,7 @@ def get_random_string(length):
 def get_hash(key):
     return hashlib.md5(key.encode('utf-8')).hexdigest()
 
-# gitea connection
+# Gitea connection
 configuration = giteapy.Configuration()
 configuration.api_key['access_token'] = 'superSecret'
 configuration.host = 'https://gitea.example.com/api/v1'
@@ -31,19 +31,19 @@ admin_api_instance = giteapy.AdminApi(giteapy.ApiClient(configuration))
 user_api_instance = giteapy.UserApi(giteapy.ApiClient(configuration))
 org_api_instance = giteapy.OrganizationApi(giteapy.ApiClient(configuration))
 
-# gitlab connection
+# GitLab connection
 gl = gitlab.Gitlab('https://gitlab.example.com', private_token='superSecret')
 
 # clean blocked users keys
 for block_gl_user in gl.users.list(blocked=True, page=1, per_page=10000):
     print("Blocked user", block_gl_user.username)
     for block_gl_user_key in block_gl_user.keys.list():
-        print("Found key", block_gl_user_key.title)
+        print("Found a key", block_gl_user_key.title)
         block_gl_user_key.delete()
 
-# inspect gitlab
+# inspect GitLab
 dict_gl_users = dict()
-# get gitea users
+# get Gitea users
 gt_users = admin_api_instance.admin_get_all_users()
 pattern = re.compile("^id_.+$")
 
@@ -61,7 +61,7 @@ for gt_user in gt_users:
     res = gl.users.list(username=gt_user.login)
     if len(res) > 0:
         if res[0].attributes['state'] == 'blocked':
-            print("Skip blocked user", gt_user.login)
+            print("Skip the blocked user", gt_user.login)
             continue
         dict_gl_users[res[0].username] = res[0]
         gl_keys_dict = dict()
@@ -72,7 +72,7 @@ for gt_user in gt_users:
         keys_to_delete = list()
         for raw_gl_key in gl_keys:
             if pattern.match(raw_gl_key.title):
-                print(gt_user.login, "delete key", raw_gl_key.title)
+                print(gt_user.login, "delete the key", raw_gl_key.title)
                 raw_gl_key.delete()
             else:
                 gl_key_hash = get_hash(raw_gl_key.key.strip().split(' ')[1])
@@ -86,23 +86,23 @@ for gt_user in gt_users:
             if gt_key in gl_keys_dict:
                 keys_to_delete.remove(gt_key)
             else:
-                print(gt_user.login, "missing key", gt_keys_dict[gt_key].title)
+                print(gt_user.login, "missing a key", gt_keys_dict[gt_key].title)
                 try:
                     res[0].keys.create({'title': gt_keys_dict[gt_key].title, 'key': gt_keys_dict[gt_key].key})
                     res[0].save()
                 except:
                     all_problem_keys_dict.append(gt_key)
-                    print(gt_user.login, "can not add key", gt_keys_dict[gt_key].title)
+                    print(gt_user.login, "can not add the key", gt_keys_dict[gt_key].title)
         for dkey in keys_to_delete:
             if pattern.match(gl_keys_dict[dkey].title):
-                print(gt_user.login, "has additional key", gl_keys_dict[dkey].title)
+                print(gt_user.login, "has an additional key", gl_keys_dict[dkey].title)
                 #gl_keys_dict[key].delete()
     else:
         print("New user", gt_user.login)
 
-print("Get problems key", len(all_problem_keys_dict))
+print("Get problematic key", len(all_problem_keys_dict))
 for pkey in all_problem_keys_dict:
     if pkey in all_gl_keys_dict:
-        print("Key", pkey, "has user", all_gl_keys_dict[pkey])
+        print("This key", pkey, "has user", all_gl_keys_dict[pkey])
     else:
         print("Can not find user for key", pkey)

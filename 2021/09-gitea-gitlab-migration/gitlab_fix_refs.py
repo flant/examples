@@ -8,12 +8,12 @@ import os
 import subprocess
 import shutil
 
-# gitlab connection
+# GitLab connection
 gl = gitlab.Gitlab('https://gitlab.example.com', private_token='superSecret')
 
 shutil.rmtree('code',ignore_errors=True)
 
-# Adding empty commit everywhere
+# adding an empty commit everywhere
 all_orgs = gl.groups.list()
 skip_orgs = ['someorg']
 for org in all_orgs:

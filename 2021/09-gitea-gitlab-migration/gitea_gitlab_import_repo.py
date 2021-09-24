@@ -15,14 +15,14 @@ GITED_TOKEN="superSecret"
 driver = webdriver.Firefox(os.getcwd()+os.path.sep)
 driver.get(GITLAB_URL)
 
-# Gitlab login
+# GitLab login
 user = driver.find_element_by_id("user_login")
 user.send_keys(GITLAB_USER)
 pas = driver.find_element_by_id("user_password")
 pas.send_keys(GITLAB_PASSWORD)
 login = driver.find_element_by_name("commit").click()
 
-# Starting import process
+# starting import process
 driver.get(GITLAB_URL+"/import/gitea/new")
 gitea_host = driver.find_element_by_name("gitea_host_url")
 gitea_host.send_keys(GITED_URL)
@@ -38,7 +38,7 @@ for row in table.find_elements_by_xpath(".//tr"):
   # clicking select button to show dropdown menu and activate buttons
   row.find_element_by_class_name("gl-dropdown-toggle").click()
   time.sleep(1)
-  # Finding project group
+  # finding project group
   for btn in row.find_elements_by_class_name("dropdown-item"):
     if btn.get_attribute("data-qa-group-name") == group:
       btn.click()
@@ -46,7 +46,7 @@ for row in table.find_elements_by_xpath(".//tr"):
   # starting import
   import_button = row.find_element(By.XPATH, "//button[@data-qa-selector='import_button']")
   import_button.click()
-  # Wait until import is ready
+  # wait until import is ready
   while True:
     time.sleep(10)
     status = row.find_elements_by_class_name("gl-p-4")[-1].text

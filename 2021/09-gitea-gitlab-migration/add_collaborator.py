@@ -9,7 +9,7 @@ from pprint import pprint
 import random
 import string
 
-# gitea connection
+# Gitea connection
 configuration = giteapy.Configuration()
 configuration.api_key['access_token'] = 'superSecret'
 configuration.host = 'https://gitea.example.com/api/v1'
@@ -18,7 +18,7 @@ user_api_instance = giteapy.UserApi(giteapy.ApiClient(configuration))
 org_api_instance = giteapy.OrganizationApi(giteapy.ApiClient(configuration))
 repo_api_instance = giteapy.RepositoryApi(giteapy.ApiClient(configuration))
 
-# Adding RO user for migrations in any repo
+# adding RO user for migrations in any repo
 all_orgs = admin_api_instance.admin_get_all_orgs()
 for org in all_orgs:
     print(org.username)

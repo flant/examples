@@ -16,7 +16,7 @@ def get_random_string(length):
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
 
-# gitea connection
+# Gitea connection
 configuration = giteapy.Configuration()
 configuration.api_key['access_token'] = 'superSecret'
 configuration.host = 'https://gitea.example.com/api/v1'
@@ -24,12 +24,12 @@ admin_api_instance = giteapy.AdminApi(giteapy.ApiClient(configuration))
 user_api_instance = giteapy.UserApi(giteapy.ApiClient(configuration))
 org_api_instance = giteapy.OrganizationApi(giteapy.ApiClient(configuration))
 
-# gitlab connection
+# GitLab connection
 gl = gitlab.Gitlab('https://gitlab.example.com', private_token='superSecret')
 
-# inspect gitlab
+# inspect GitLab
 dict_gl_users = dict()
-# get gitea users
+# get Gitea users
 gt_users = admin_api_instance.admin_get_all_users()
 #pprint(api_response)
 lg_gt_map = dict()
