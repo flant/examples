@@ -4,6 +4,7 @@ Here are sample configurations that can be used to deploy Keycloak in Kubernetes
 
 This repo is intended to be used as a playground for a corresponding article:
 
+* «[Running fault-tolerant Keycloak with Infinispan in Kubernetes](https://blog.flant.com/ha-keycloak-infinispan-kubernetes/)».
 * Russian version: «[Настраиваем отказоустойчивый Keycloak с Infinispan в Kubernetes](https://habr.com/ru/company/flant/blog/567626/)».
 
 ## Contents
