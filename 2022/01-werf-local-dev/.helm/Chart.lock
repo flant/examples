@@ -1,0 +1,9 @@
+dependencies:
+- name: app
+  repository: ""
+  version: "0.1"
+- name: mysql
+  repository: ""
+  version: "0.1"
+digest: sha256:fe182e918fab305c6f443eef420e835e9db110635fabb6601495671a598a2cb1
+generated: "2021-12-02T19:54:40.155157198+03:00"

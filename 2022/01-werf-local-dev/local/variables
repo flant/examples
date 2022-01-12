@@ -1,0 +1,6 @@
+ENV=local
+NAMESPACE=local
+URL=test.application.local
+REPO=registry.local.dev
+APP_REPO=$REPO/app
+MODE="--dev"

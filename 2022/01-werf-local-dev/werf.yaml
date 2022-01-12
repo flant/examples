@@ -1,0 +1,74 @@
+project: werf-guide-app
+configVersion: 1
+
+---
+image: builder
+from: node:12-alpine
+git:
+- add: /
+  to: /app
+  excludePaths:
+  - local
+  - .helm
+  - Dockerfile
+  stageDependencies: 
+    install:
+    - package.json 
+    - package-lock.json
+    setup:
+    - "**/*"
+shell:
+  install:
+  - cd /app
+  - npm ci
+  setup:
+  - cd /app
+  - npm run build
+
+---
+image: backend
+from: node:12-alpine
+docker:
+  WORKDIR: /app
+git:
+- add: /
+  to: /app
+  includePaths:
+  - package.json 
+  - package-lock.json
+  stageDependencies: 
+    install:
+    - package.json 
+    - package-lock.json
+shell:
+  beforeInstall:
+  - apk update
+  - apk add -U mysql-client
+  install:
+  - cd /app
+  - npm ci --production
+  setup:
+  - mkdir -p /app/dist
+import:
+- image: builder
+  add: /app
+  to: /app
+  after: setup
+
+---
+image: frontend
+from: nginx:stable-alpine
+docker:
+  WORKDIR: /www
+git:
+- add: /.werf/nginx.conf
+  to: /etc/nginx/nginx.conf
+import:
+- image: builder
+  add: /app/dist
+  to: /www/static
+  after: setup
+
+---
+image: mysql
+from: mysql:5.7

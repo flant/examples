@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      initContainers:
+      - name: wait-db-readiness
+        image: {{ index .Values.werf.image "backend" }}
+        command:
+        - sh
+        - -euc
+        - |
+          # [<en>] Waiting until the database is available and migrations are completed.
+          # [<ru>] Дожидаемся доступности БД и выполнения миграций.
+          until ./node_modules/.bin/sequelize-cli db:migrate:status; do
+            sleep 1
+          done
+        env:
+        - name: NODE_ENV
+          value: production
+        {{- include "mysql_app_envs" . | nindent 8 }}
+      containers:
+      - name: backend
+        image: {{ index .Values.werf.image "backend" }}
+        command: ["node", "./bin/www"]
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: production
+        {{- include "mysql_app_envs" . | nindent 8 }}
+      - name: frontend
+        image: {{ index .Values.werf.image "frontend" }}
+        ports:
+        - containerPort: 80

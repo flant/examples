@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+echo ""
+echo "#####################################################################################"
+echo ""
+echo "Installation manual: https://minikube.sigs.k8s.io/docs/start/"
+echo ""
+echo "binary file can be installed like that: (copy+paste should be enough)"
+echo ""
+echo "curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+echo "sudo install minikube-linux-amd64 /usr/local/bin/minikube"
+echo ""
+echo "#####################################################################################"

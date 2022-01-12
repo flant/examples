@@ -1,0 +1,16 @@
+apiVersion: v2
+name: werf-guide-app
+version: 1.0.0
+dependencies:
+- name: app
+  version: 0.1
+  condition: app.enabled
+  export-values:
+  - parent: werf
+    child: werf
+- name: mysql
+  version: 0.1
+  condition: mysql.enabled
+  export-values:
+  - parent: werf
+    child: werf

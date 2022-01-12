@@ -1,0 +1,32 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # [<en>] The release revision in the Job name will cause the Job to be recreated every time.
+  # [<en>] This way, we can get around the fact that the Job is immutable.
+  # [<ru>] Версия Helm-релиза в имени Job заставит Job каждый раз пересоздаваться.
+  # [<ru>] Так мы сможем обойти то, что Job неизменяема.
+  name: "setup-and-migrate-db-rev{{ .Release.Revision }}"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: setup-and-migrate-db
+        image: {{ index .Values.werf.image "backend" }}
+        command:
+        - sh
+        - -euc
+        - |
+          while [[ ! "$(mysqladmin -h $MYSQL_HOST -P 3306 -u $MYSQL_USERNAME -p$MYSQL_PASSWORD ping)" ]]; do
+            sleep 1
+          done
+          ./node_modules/.bin/sequelize-cli db:create
+          ./node_modules/.bin/sequelize-cli db:migrate
+        env:
+        - name: NODE_ENV
+          value: production
+        {{- include "mysql_app_envs" . | nindent 8 }}

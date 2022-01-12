@@ -1,0 +1,21 @@
+app:
+  enabled: false
+  envs:
+    MYSQL_HOST:
+      _default: mysql
+    MYSQL_DATABASE:
+      _default: werf
+      local: werf-guide-app
+    MYSQL_USERNAME:
+      _default: werf
+      local: root
+    MYSQL_PASSWORD:
+      local: Qwerty123
+
+mysql:
+  enabled: false
+  envs:
+    MYSQL_ROOT_PASSWORD: 
+      local: Qwerty123
+    MYSQL_DATABASE:
+      local: werf-guide-app

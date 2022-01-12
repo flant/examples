@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: {{ .Chart.Name }}
+spec:
+  rules:
+  - host: {{ .Values.ci_url }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Chart.Name }}
+            port:
+              number: 80

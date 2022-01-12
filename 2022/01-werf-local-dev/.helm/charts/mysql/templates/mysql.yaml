@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  serviceName: {{ .Chart.Name }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: mysql
+        image: {{ index .Values.werf.image "mysql" }}
+        ports:
+        - containerPort: 3306
+        env: {{ include "mysql_database_envs" . | nindent 8 }}
+        volumeMounts:
+        - name: {{ .Chart.Name }}-data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Chart.Name }}-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Mi
