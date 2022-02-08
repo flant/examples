@@ -3,6 +3,12 @@ Configurations, scripts &amp; samples used in guides and other articles from [Fl
 
 Here are some links to what you can find in the repo:
 
+# 2021
+
+* [K8s manifests](2021/09-memcached-mcrouter) for «[Using mcrouter to make memcached highly available in Kubernetes](https://blog.flant.com/highly-available-memcached-with-mcrouter-in-kubernetes/)»;
+* [Python scripts](2021/09-gitea-gitlab-migration) for «[Our experience with migrating from Gitea to GitLab. Challenging but successful](https://blog.flant.com/gitea-to-gitlab-migration/)»;
+* [Kubernetes manifests and Keycloak JARs](2021/07-keycloak) for «[Running fault-tolerant Keycloak with Infinispan in Kubernetes](https://blog.flant.com/ha-keycloak-infinispan-kubernetes/)»;
+
 # 2020
 
 * [shell-operator hooks](2020/08-kubecon) for «[Go? Bash! Meet the Shell-operator](https://blog.flant.com/go-bash-meet-the-shell-operator/)»;
