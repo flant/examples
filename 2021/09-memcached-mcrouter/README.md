@@ -1,7 +1,8 @@
-Here are sample configurations that can be used to deploy a high-available memcached in Kubernetes using mcrouter.
+Here are sample configurations that can be used to deploy a highly available (HA) memcached in Kubernetes using mcrouter.
 
 This repo is intended to be used as a playground for a corresponding article:
 
+* «[Using mcrouter to make memcached highly available in Kubernetes](https://blog.flant.com/highly-available-memcached-with-mcrouter-in-kubernetes/)».
 * Russian version: «[Готовим высокодоступный memcached с mcrouter в Kubernetes](https://habr.com/ru/company/flant/blog/575656/)».
 
 ## Contents
