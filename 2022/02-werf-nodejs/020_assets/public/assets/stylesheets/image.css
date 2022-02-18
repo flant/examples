@@ -1,0 +1,17 @@
+#container {
+  height: 50vh;
+  text-align: center;
+  display: grid;
+}
+
+#image {
+  margin: auto;
+  height: auto;
+  width: 30vh;
+}
+
+#show-image-btn {
+  margin: auto;
+  padding: 0.7em 1.5em;
+  font-size: large;
+}

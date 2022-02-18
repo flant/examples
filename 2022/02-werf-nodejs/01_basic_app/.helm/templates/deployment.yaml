@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: werf-first-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: werf-first-app
+  template:
+    metadata:
+      labels:
+        app: werf-first-app
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: app
+        image: {{ .Values.werf.image.app }}
+        command: ["npm", "start"]
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DEBUG
+          value: "app:*"

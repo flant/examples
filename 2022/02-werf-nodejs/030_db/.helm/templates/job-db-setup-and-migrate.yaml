@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "setup-and-migrate-db-rev{{ .Release.Revision }}"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: setup-and-migrate-db
+        image: {{ .Values.werf.image.backend }}
+        command:
+        - sh
+        - -euc
+        - |
+          is_mysql_available() {
+            tries=$1
+            i=0
+            while [ $i -lt $tries ]; do
+              mysqladmin -h mysql -P 3306 -u root -p=password ping || return 1
+              i=$((i+1))
+              sleep 1
+            done
+          }
+
+          until is_mysql_available 10; do
+            sleep 1
+          done
+
+          ./node_modules/.bin/sequelize-cli db:create
+          ./node_modules/.bin/sequelize-cli db:migrate
+        env:
+        - name: NODE_ENV
+          value: production

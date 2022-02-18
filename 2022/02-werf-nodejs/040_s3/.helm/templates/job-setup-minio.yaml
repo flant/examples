@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "setup-minio-rev{{ .Release.Revision }}"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: setup-minio
+        image: minio/mc
+        command:
+        - sh
+        - -euc
+        - |
+          is_minio_available() {
+            tries=$1
+            i=0
+            while [ $i -lt $tries ]; do
+              curl -sSL http://minio:9000/minio/health/live || return 1
+              i=$((i+1))
+              sleep 1
+            done
+          }
+
+          until is_minio_available 10; do
+            sleep 1
+          done
+
+          mc alias set minio http://minio:9000 minioadmin minioadmin
+
+          mc mb --ignore-existing minio/werf-first-app
