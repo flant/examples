@@ -1,0 +1,16 @@
+name: okteto-test
+autocreate: true
+image: okteto/golang:1
+command: bash
+#namespace: okteto
+securityContext:
+  capabilities:
+    add:
+    - SYS_PTRACE
+sync:
+- .:/usr/src/app
+forward:
+- 2345:2345
+- 8080:8080
+persistentVolume:
+  enabled: true
