@@ -1,0 +1,6 @@
+/.helm/
+
+/log/*
+/tmp/*
+
+node_modules

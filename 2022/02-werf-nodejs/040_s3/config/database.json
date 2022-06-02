@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "null",
+    "database": "werf-first-app",
+    "host": "mysql",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "werf-first-app",
+    "host": "mysql",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "password",
+    "database": "werf-first-app",
+    "host": "mysql",
+    "dialect": "mysql"
+  }
+}
