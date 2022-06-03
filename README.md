@@ -3,6 +3,10 @@ Configurations, scripts &amp; samples used in guides and other articles from [Fl
 
 Here are some links to what you can find in the repo:
 
+# 2022
+
+* [Simple Test Application](2022/01-werf-local-dev) for «[Local development in Kubernetes with werf 1.2 and minikube](https://blog.flant.com/local-development-in-kubernetes-with-werf/)»;
+
 # 2021
 
 * [K8s manifests](2021/09-memcached-mcrouter) for «[Using mcrouter to make memcached highly available in Kubernetes](https://blog.flant.com/highly-available-memcached-with-mcrouter-in-kubernetes/)»;
