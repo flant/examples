@@ -1,0 +1,6 @@
+project: werf-kuberun-app
+configVersion: 1
+
+---
+image: kuberun
+dockerfile: Dockerfile
