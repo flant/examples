@@ -5,11 +5,11 @@ import (
 	"strconv"
 )
 
-// Функция, вычисляющая площадь прямоугольника.
+// A function for calculating the area of a rectangle.
 func getArea(x, y int) (res int) {
 	return x * y
 }
 
 func main() {
-	fmt.Println("Площадь прямоугольника: " + strconv.Itoa(getArea(10, 10)))
+	fmt.Println("Rectangle area: " + strconv.Itoa(getArea(10, 10)))
 }

@@ -8,6 +8,6 @@ func testGetArea(t *testing.T) {
 	want := 6
 
 	if got != want {
-		t.Errorf("Ожидалось %q, получено %q", got, want)
+		t.Errorf("Expected %q, received %q", got, want)
 	}
 }
