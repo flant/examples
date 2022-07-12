@@ -6,6 +6,7 @@ Here are some links to what you can find in the repo:
 # 2022
 
 * [Simple Test Application](2022/01-werf-local-dev) for «[Local development in Kubernetes with werf 1.2 and minikube](https://blog.flant.com/local-development-in-kubernetes-with-werf/)»;
+* [Samples to try Okteto for your local development](2022/06-okteto) for «[Okteto Cloud as another way for local development in Kubernetes](https://blog.flant.com/okteto-cloud-for-local-development-in-kubernetes/)»
 
 # 2021
 
