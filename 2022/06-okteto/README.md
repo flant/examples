@@ -2,6 +2,7 @@ Here are samples you can use to try Okteto for your local development.
 
 This repo is intended to be used as a playground for a corresponding article:
 
+* «**[Okteto Cloud as another way for local development in Kubernetes](https://blog.flant.com/okteto-cloud-for-local-development-in-kubernetes/)**».
 * Russian version: «[Okteto Cloud – еще один удобный способ организации локальной разработки](https://habr.com/ru/company/flant/blog/667806/)».
 
 ## Contents
