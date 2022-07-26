@@ -15,7 +15,7 @@ This repo is intended to be used as a playground for a corresponding article:
 The fastest way is to use official golang image:
 
 ```shell
-docker run --rm -v $(pwd):/app -w /app -e CGO_ENABLED=0 -e GOOS=linux golang:1.15-alpine go build etcdhelper.go
+docker run --rm -v $(pwd):/app -w /app -e CGO_ENABLED=0 -e GOOS=linux golang:1.18-alpine go build etcdhelper.go
 ```
 
 etcdhelper binary will be created in the current directory. Use `GOOS=darwin` to build MacOS executable. 
