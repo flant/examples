@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-v11-test
+  annotations:
+spec:
+  containers:
+  - name: myapp
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -c
+    - |
+      uuid=$(cat /proc/sys/kernel/random/uuid)
+
+      echo "== version 1.1"
+
+      echo "== run migration"
+      sed -i "/[^\t]/ s/^/${uuid}/" /data/file.txt
+
+      echo "== list existing data"
+      cat /data/file.txt
+
+      echo "== running loop"
+      while sleep 1; do
+        echo -e "${uuid}\t$(date)" | tee -a /data/file.txt
+      done
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: mypvc-test

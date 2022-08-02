@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mydb
+  annotations:
+spec:
+  containers:
+  - name: mydb
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -c
+    - |
+      echo "== list existing data"
+      cat /data/file.txt
+
+      echo "== running loop"
+      while sleep 1; do
+        date | tee -a /data/file.txt
+      done
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: db-data

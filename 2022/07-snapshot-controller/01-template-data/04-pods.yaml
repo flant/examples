@@ -1,0 +1,130 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-worker1
+  annotations:
+spec:
+  containers:
+  - name: worker
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      echo "== loading data from /data/file.txt"
+      cat /data/file.txt
+      echo "== starting worker"
+      sleep infinity
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-worker1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-worker2
+  annotations:
+spec:
+  containers:
+  - name: worker
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      echo "== loading data from /data/file.txt"
+      cat /data/file.txt
+      echo "== starting worker"
+      sleep infinity
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-worker2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-worker3
+  annotations:
+spec:
+  containers:
+  - name: worker
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      echo "== loading data from /data/file.txt"
+      cat /data/file.txt
+      echo "== starting worker"
+      sleep infinity
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-worker3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-worker4
+  annotations:
+spec:
+  containers:
+  - name: worker
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      echo "== loading data from /data/file.txt"
+      cat /data/file.txt
+      echo "== starting worker"
+      sleep infinity
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-worker4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: data-worker5
+  annotations:
+spec:
+  containers:
+  - name: worker
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      echo "== loading data from /data/file.txt"
+      cat /data/file.txt
+      echo "== starting worker"
+      sleep infinity
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-worker5

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-v10
+  annotations:
+spec:
+  containers:
+  - name: myapp
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -c
+    - |
+      echo "== version 1.0"
+
+      echo "== list existing data"
+      cat /data/file.txt
+
+      echo "== running loop"
+      while sleep 1; do
+        date | tee -a /data/file.txt
+      done
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: mypvc

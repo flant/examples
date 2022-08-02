@@ -1,0 +1,8 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: example-backup-from-s3
+spec:
+  source:
+    volumeSnapshotContentName: example-backup-from-s3
+  volumeSnapshotClassName: linstor-minio

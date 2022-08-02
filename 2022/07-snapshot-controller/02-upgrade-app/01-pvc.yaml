@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: linstor-ssd-lvmthin-r2
+  resources:
+    requests:
+      storage: 10Gi
