@@ -1,0 +1,8 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: mypvc-before-upgrade
+spec:
+  volumeSnapshotClassName: linstor
+  source:
+    persistentVolumeClaimName: mypvc

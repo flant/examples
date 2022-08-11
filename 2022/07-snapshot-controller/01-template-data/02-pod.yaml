@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: import-data
+  annotations:
+spec:
+  containers:
+  - name: data-importer
+    image: alpine:3.16
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      cat >/data/file.txt <<\EOT
+      When you were here before
+      Couldn't look you in the eye
+      You're just like an angel
+      Your skin makes me cry
+      You float like a feather
+      In a beautiful world
+      I wish I was special
+      You're so fuckin' special
+      EOT
+      echo "== data succefully imported into /data/file.txt"
+    volumeMounts:
+    - name: vol
+      mountPath: /data
+  terminationGracePeriodSeconds: 0
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: pvc-template
+  restartPolicy: Never

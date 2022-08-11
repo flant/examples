@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-worker1
+spec:
+  storageClassName: linstor-ssd-lvmthin-r2
+  dataSource:
+    name: pvc-template
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-worker2
+spec:
+  storageClassName: linstor-ssd-lvmthin-r2
+  dataSource:
+    name: pvc-template
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-worker3
+spec:
+  storageClassName: linstor-ssd-lvmthin-r2
+  dataSource:
+    name: pvc-template
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-worker4
+spec:
+  storageClassName: linstor-ssd-lvmthin-r2
+  dataSource:
+    name: pvc-template
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-worker5
+spec:
+  storageClassName: linstor-ssd-lvmthin-r2
+  dataSource:
+    name: pvc-template
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

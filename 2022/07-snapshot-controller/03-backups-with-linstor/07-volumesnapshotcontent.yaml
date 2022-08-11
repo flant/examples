@@ -1,0 +1,15 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotContent
+metadata:
+  name: example-backup-from-s3
+spec:
+  deletionPolicy: Delete
+  driver: linstor.csi.linbit.com
+  source:
+    snapshotHandle: snapshot-9db78a7b-a9ba-4825-9009-673c7ebab043
+  volumeSnapshotClassName: linstor-minio
+  volumeSnapshotRef:
+    apiVersion: snapshot.storage.k8s.io/v1
+    kind: VolumeSnapshot
+    name: example-backup-from-s3
+    namespace: new-cluster
