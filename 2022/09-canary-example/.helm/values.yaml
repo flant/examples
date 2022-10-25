@@ -1,0 +1,3 @@
+nginx:
+  url:
+    _default: "my.awesome.domain"

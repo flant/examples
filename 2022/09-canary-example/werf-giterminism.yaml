@@ -1,0 +1,8 @@
+giterminismConfigVersion: 1
+cli:
+  allowCustomTags: true
+config:
+  goTemplateRendering:
+    allowEnvVariables:
+    - CANARY_DEPLOY
+    - CI_HELM_RELEASE

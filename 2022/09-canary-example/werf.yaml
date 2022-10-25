@@ -1,0 +1,16 @@
+project: canary-example
+configVersion: 1
+deploy:
+ helmRelease: '[[ project ]]{{ env "CI_HELM_RELEASE" }}'
+ namespace: "[[ project ]]"
+
+---
+image: nginx
+from: nginx:stable
+git:
+- add: /
+  to: /app
+  excludePaths:
+  - .helm
+  - werf.yaml
+  - .getlab-ci.yml
