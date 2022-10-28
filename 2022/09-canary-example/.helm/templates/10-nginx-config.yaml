@@ -1,0 +1,26 @@
+{{ $name := printf "%s%s" (.Chart.Name) (.Values.global.canary_deploy) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-configmap
+data:
+  nginx.conf: |
+    error_log  /dev/stderr;
+    events {
+      worker_connections 100000;
+      multi_accept on;
+    }
+    http {
+        charset utf-8;
+
+        server {
+            listen 80;
+            index index.html;
+            root /app;
+            error_log /dev/stderr;
+            location / {
+                try_files $uri /index.html$is_args$args;
+            }
+        }
+    }

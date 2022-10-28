@@ -1,0 +1,67 @@
+stages:
+  - prebuild
+  - converge
+  - cleanup
+
+before_script:
+  # Install trdl if not installed.
+  - |
+    if ! [ -x "$(command -v trdl)" ]; then
+      flock --verbose -w 300 ~/.trdl_install.lock bash -c "
+        curl -L 'https://tuf.trdl.dev/targets/releases/0.1.3/linux-amd64/bin/trdl' -o /tmp/trdl &&
+        mkdir -p ~/bin &&
+        install /tmp/trdl ~/bin/trdl
+      "
+    fi
+  - which -a ~/bin/trdl && ~/bin/trdl version
+  # Add werf repo.
+  - |
+    if ! ~/bin/trdl list | grep "^werf " 2>&1 1>/dev/null; then
+      ~/bin/trdl add werf "https://tuf.werf.io" 1 \
+        "b7ff6bcbe598e072a86d595a3621924c8612c7e6dc6a82e919abe89707d7e3f468e616b5635630680dd1e98fc362ae5051728406700e6274c5ed1ad92bea52a2"
+    fi
+  - source $(~/bin/trdl use werf 1.2 alpha)
+  - source $(werf ci-env gitlab --as-file)
+
+.base_converge: &base_converge
+  stage: converge
+  script:
+    - export CI_HELM_RELEASE=${CANARY_DEPLOY}
+    - werf converge 
+      --set "global.canary_header_value=${CANARY_HEADER_VALUE:-}"
+      --set "global.canary_deploy=${CANARY_DEPLOY:-}"
+      --set "global.canary_header=${CANARY_HEADER:-}"
+      --set "global.canary_header_value=${CANARY_HEADER_VALUE:-}"
+  except:
+    - schedules
+  tags:
+    - werf
+
+Converge:
+  <<: *base_converge
+  environment:
+    name: canary-example
+  when: manual
+  variables:
+    CANARY_DEPLOY: ""
+
+Converge canary:
+  <<: *base_converge
+  environment:
+    name: canary-example
+  when: manual
+  variables:
+    CANARY_DEPLOY: "-canary"
+    CANARY_HEADER: "x-version"
+    CANARY_HEADER_VALUE: "canary"
+
+Cleanup registry:
+  stage: cleanup
+  script:
+    - unset KUBECONFIG
+    - docker login -u nobody -p ${WERF_IMAGES_CLEANUP_PASSWORD} ${WERF_REPO}
+    - werf cleanup
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - werf

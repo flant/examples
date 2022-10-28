@@ -1,0 +1,59 @@
+{{ $name := printf "%s%s" (.Chart.Name) (.Values.global.canary_deploy) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/10-nginx-config.yaml") . | sha256sum }}
+      labels:
+        app: {{ $name }}
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      volumes:
+      - name: configs
+        configMap:
+          name: {{ .Chart.Name }}-configmap
+      containers:
+      - name: nginx
+        imagePullPolicy: Always
+        image: {{ index .Values.werf.image "nginx" }}
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "/bin/bash", "-c", "sleep 5; kill -QUIT 1" ]
+        command: ["/usr/sbin/nginx", "-g", "daemon off;"]
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: configs
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ $name }}
+  ports:
+  - name: http
+    port: 80

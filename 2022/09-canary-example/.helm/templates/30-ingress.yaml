@@ -1,0 +1,24 @@
+{{ $name := printf "%s%s" (.Chart.Name) (.Values.global.canary_deploy) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+{{- if ne .Values.global.canary_deploy "" }}
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "30"
+#    nginx.ingress.kubernetes.io/canary-by-header: {{ $.Values.global.canary_header | quote }}
+#    nginx.ingress.kubernetes.io/canary-by-header-value: {{ $.Values.global.canary_header_value | quote }}
+{{- end }}
+spec:
+  rules:
+  - host: {{ pluck .Values.global.env .Values.nginx.url | first | default .Values.nginx.url._default }}
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $name }}
+            port:
+              number: 80
