@@ -7,6 +7,7 @@ Here are some links to what you can find in the repo:
 
 * [Simple Test Application](2022/01-werf-local-dev) for «[Local development in Kubernetes with werf 1.2 and minikube](https://blog.flant.com/local-development-in-kubernetes-with-werf/)»;
 * [Samples to try Okteto for your local development](2022/06-okteto) for «[Okteto Cloud as another way for local development in Kubernetes](https://blog.flant.com/okteto-cloud-for-local-development-in-kubernetes/)»
+* [A simple application written in Go ](2022/06-werf-kube-run)for [Running one-time tasks and debugging images in the Kubernetes cluster using werf](https://blog.werf.io/running-one-time-tasks-and-debugging-images-in-the-kubernetes-cluster-using-werf-936d6dc483e2)
 
 # 2021
 
