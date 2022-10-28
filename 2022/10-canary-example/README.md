@@ -1,0 +1,1 @@
+Here are examples for implement canary releases in Kubernetes using Ingress.
