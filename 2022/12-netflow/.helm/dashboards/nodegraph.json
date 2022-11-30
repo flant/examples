@@ -1,0 +1,122 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 86,
+    "iteration": 1661104216411,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "hamedkarbasi93-nodegraphapi-datasource",
+          "uid": "P17CDE6154CD2DC09"
+        },
+        "gridPos": {
+          "h": 25,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "targets": [
+          {
+            "datasource": {
+              "type": "hamedkarbasi93-nodegraphapi-datasource",
+              "uid": "P17CDE6154CD2DC09"
+            },
+            "queryText": "srcnamespace=$srcnamespace&dstnamespace=$dstnamespace&to=${__to}&from=${__from}",
+            "refId": "A"
+          }
+        ],
+        "title": "Graph",
+        "type": "nodeGraph"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 36,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": true,
+            "text": "kube-system",
+            "value": "kube-system"
+          },
+          "definition": "label_values(netflow_connection_count, srcnamespace)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "srcnamespace",
+          "multi": false,
+          "name": "srcnamespace",
+          "options": [],
+          "query": {
+            "query": "label_values(netflow_connection_count, srcnamespace)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": true,
+            "text": "kube-system",
+            "value": "kube-system"
+          },
+          "definition": "label_values(netflow_connection_count, srcnamespace)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "dstnamespace",
+          "multi": false,
+          "name": "dstnamespace",
+          "options": [],
+          "query": {
+            "query": "label_values(netflow_connection_count, srcnamespace)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "iptnetflow-nodegraph",
+    "uid": "AtE7tZWVz",
+    "version": 1,
+    "weekStart": ""
+  }

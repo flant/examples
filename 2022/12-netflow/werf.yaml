@@ -1,0 +1,59 @@
+project: iptnetflow
+configVersion: 1
+
+---
+artifact: build
+from: golang:1.18-buster
+git:
+- add: /
+  to: /build
+  stageDependencies:
+    install:
+    - "go.mod"
+    - "go.sum"
+    setup:
+    - "**/*"
+  excludePaths:
+  - .git
+  - .helm
+  - .gitignore
+  - .gitlab-ci.yml
+  - README.md
+shell:
+  install:
+  - mkdir /app
+  - cd /build
+  - go get
+  setup:
+  - cd /build
+  - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/iptnetflow .
+  - strip /app/iptnetflow
+---
+image: app
+from: spotify/scratch
+import:
+- artifact: build
+  stage: setup
+  add: /app
+  to: /
+  before: setup    
+---
+image: python
+from: python:3.8-slim-buster
+docker:
+  WORKDIR: /app
+  ENV:
+    LANG: "en_US.UTF-8"
+    LANGUAGE: "en_US:en"
+    TERM: xterm
+    LC_ALL: en_US.UTF-8
+    TZ: Europe/Moscow
+git:
+  - add: /nodegraph
+    to: /app
+    stageDependencies:
+      setup:
+      - 'nodegraph/nodegraph.py'
+shell:
+  beforeInstall:
+  - pip install requests

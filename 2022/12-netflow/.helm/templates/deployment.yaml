@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      imagePullSecrets:
+      - name: registrysecret    
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.werf.image.app }}
+        command:
+        - /iptnetflow
+        - -listen 
+        - netflow://0.0.0.0:2055
+        - -workers
+        - "4"
+        ports:
+        - containerPort: 2055 
+          name: udp-netflow
+          protocol: UDP
+        - containerPort: 8080
+          name: http-metrics
+          protocol: TCP
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 512Mi
+          
+      serviceAccountName: iptnetflow-sa
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    prometheus.deckhouse.io/custom-target: iptnetflow
+  annotations:
+    prometheus.deckhouse.io/sample-limit: "30000"
+spec:
+  type: ClusterIP
+  clusterIP: {{ .Values.collector.ip }}
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - name: udp-netflow
+      port: 2055
+      protocol: UDP
+    - name: http-metrics
+      port: 8080
+      protocol: TCP

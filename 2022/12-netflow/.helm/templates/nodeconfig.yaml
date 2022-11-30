@@ -1,0 +1,16 @@
+apiVersion: deckhouse.io/v1alpha1
+kind: NodeGroupConfiguration
+metadata:
+  name: iptnetflow.sh
+spec:
+  weight: 100
+  bundles:
+  - "*"
+  nodeGroups:
+  - "*"
+  content: |
+    dpkg -s iptables-netflow-dkms || ( apt-get update &&  apt-get install -y iptables-netflow-dkms )
+    lsmod | grep ipt_NETFLOW || modprobe ipt_NETFLOW protocol=9
+    [ "$(sysctl -n net.netflow.destination)" = "{{ .Values.collector.ip }}:2055" ] || sysctl -w net.netflow.destination={{ .Values.collector.ip }}:2055
+    [ "$(sysctl -n net.netflow.protocol)" = "9" ] || sysctl -w net.netflow.protocol=9
+    iptables -C FORWARD -i cni0 -j NETFLOW || iptables -I FORWARD -i cni0 -j NETFLOW
