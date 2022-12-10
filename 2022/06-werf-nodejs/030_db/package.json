@@ -9,7 +9,7 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
+    "express": "~4.17.3",
     "express-async-handler": "^1.2.0",
     "mysql2": "^2.3.3-rc.0",
     "pino": "^7.0.5",
