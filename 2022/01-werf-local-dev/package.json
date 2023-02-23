@@ -15,7 +15,7 @@
     "pino": "^7.0.5",
     "pino-http": "^5.8.0",
     "dotenv": "^8.2.0",
-    "sequelize": "^6.9.0",
+    "sequelize": "^6.28.2",
     "sequelize-cli": "^6.3.0"
   },
   "devDependencies": {
