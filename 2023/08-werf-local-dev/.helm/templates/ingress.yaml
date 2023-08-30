@@ -6,7 +6,7 @@ metadata:
   name: habr-app
 spec:
   rules:
-  - host: habrapp.zhbert.ru
+  - host: habrapp.example.com
     http:
       paths:
       - path: /
@@ -25,5 +25,5 @@ spec:
               number: 8080
   tls:
     - hosts:
-        - habrapp.zhbert.ru
+        - habrapp.example.com
       secretName: habr-app-tls
