@@ -34,3 +34,16 @@ spec:
             value: "mysql"
           - name: DB_PORT
             value: "3306"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: habr-app
+  namespace: habr-app
+spec:
+  secretName: habr-app-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+  - habrapp.example.com
