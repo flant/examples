@@ -8,3 +8,8 @@ dockerfile: backend/Dockerfile
 ---
 image: frontend
 dockerfile: frontend/Dockerfile
+
+---
+image: frontend-compose
+dockerfile: frontend/Dockerfile
+target: build-stage

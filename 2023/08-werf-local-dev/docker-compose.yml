@@ -2,7 +2,11 @@ version: "3.7"
 services:
   frontend:
     container_name: frontend
-    image: $WERF_FRONTEND_DOCKER_IMAGE_NAME
+    image: $WERF_FRONTEND_COMPOSE_DOCKER_IMAGE_NAME
+    working_dir: "/app"
+    command: npm run serve
+    volumes:
+      - "./frontend:/app"
     networks:
       - nginx_net
   backend:
