@@ -25,5 +25,5 @@ spec:
               number: 8080
   tls:
     - hosts:
-        - habrapp.zhbert.ru
+        - habrapp.example.com
       secretName: habr-app-tls
