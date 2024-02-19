@@ -15,13 +15,6 @@ spec:
       containers:
       - name: mysql
         image: mysql:8
-        resources:
-          limits:
-            cpu: "1"
-            memory: 512Mi
-          requests:
-            cpu: 500m
-            memory: 256Mi
         args: ["--default-authentication-plugin=mysql_native_password"]
         ports:
         - containerPort: 3306
@@ -42,15 +35,6 @@ spec:
       resources:
         requests:
           storage: 1Gi
----
-apiVersion: deckhouse.io/v1alpha1
-kind: LocalPathProvisioner
-metadata:
-  name: localpath-system
-spec:
-  nodeGroups:
-  - master
-  path: "/opt/local-path-provisioner"
 ---
 apiVersion: v1
 kind: Service

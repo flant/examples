@@ -11,7 +11,7 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: waiting-mysql
-        image: alpine:3.6
+        image: alpine:3.19
         command: [ '/bin/sh', '-c', 'while ! nc -z mysql 3306; do sleep 1; done' ]
       containers:
       - name: setup-and-migrate-db

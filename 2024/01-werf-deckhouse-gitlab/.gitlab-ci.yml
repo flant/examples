@@ -18,7 +18,7 @@ Build and Publish:
 .base_deploy:
   stage: deploy
   script:
-    - werf converge --skip-build --set "env_url=$(echo ${CI_ENVIRONMENT_URL} | cut -d / -f 3)"
+    - werf converge --require-built-images --set "env_url=$(echo ${CI_ENVIRONMENT_URL} | cut -d / -f 3)"
   except: [schedules]
   tags: [werf]
 

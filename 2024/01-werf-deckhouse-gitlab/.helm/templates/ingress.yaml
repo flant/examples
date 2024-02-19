@@ -1,10 +1,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
   name: habr-app
 spec:
+  ingressClassName: nginx
   rules:
   - host: habrapp.zhbert.ru
     http:
@@ -27,3 +26,16 @@ spec:
     - hosts:
         - habrapp.zhbert.ru
       secretName: habr-app-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: habr-app
+  namespace: habr-app
+spec:
+  secretName: habr-app-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+  - habrapp.zhbert.ru
