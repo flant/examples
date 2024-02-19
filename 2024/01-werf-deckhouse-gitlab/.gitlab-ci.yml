@@ -1,0 +1,30 @@
+stages:
+  - build
+  - deploy
+  - dismiss
+  - cleanup
+
+before_script:
+  - type trdl && . $(trdl use werf 1.2 stable)
+  - type werf && source $(werf ci-env gitlab --as-file)
+
+Build and Publish:
+  stage: build
+  script:
+    - werf build
+  except: [schedules]
+  tags: [werf]
+
+.base_deploy:
+  stage: deploy
+  script:
+    - werf converge --require-built-images --set "env_url=$(echo ${CI_ENVIRONMENT_URL} | cut -d / -f 3)"
+  except: [schedules]
+  tags: [werf]
+
+Deploy to Production:
+  extends: .base_deploy
+  environment:
+    name: production
+    url: https://habrapp.zhbert.ru
+  only: [main]

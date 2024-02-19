@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Версия Helm-релиза в имени Job заставит Job каждый раз пересоздаваться.
+  # Так мы сможем обойти то, что Job неизменяема.
+  name: "setup-and-migrate-db-rev{{ .Release.Revision }}"
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: waiting-mysql
+        image: alpine:3.19
+        command: [ '/bin/sh', '-c', 'while ! nc -z mysql 3306; do sleep 1; done' ]
+      containers:
+      - name: setup-and-migrate-db
+        image: {{ .Values.werf.image.backend }}
+        command: ["/migrations/migrate",  "-database", "mysql://root:password@tcp(mysql:3306)/habr-app", "-path", "/migrations/schemes", "up"]
