@@ -1,0 +1,10 @@
+project: habr-app
+configVersion: 1
+
+---
+image: backend
+dockerfile: backend/Dockerfile
+
+---
+image: frontend
+dockerfile: frontend/Dockerfile
