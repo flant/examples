@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deckhouse and werf demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container mt-5">
+    {{if .Error}}
+    <p>{{ .Error }}</p>
+    {{else}}
+    <h2>Messages from talkers</h2>
+
+    <table class="table">
+        <thead>
+            <th>Name</th>
+            <th>Message</th>
+        </thead>
+        <tbody>
+        {{range .Data}}
+        <tr>
+            <td>{{ .Name }}</td>
+            <td>{{ .Message }}</td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+    {{end}}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+</html>
