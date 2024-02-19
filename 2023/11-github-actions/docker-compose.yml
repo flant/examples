@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  frontend:
+    container_name: frontend
+    image: $WERF_FRONTEND_DOCKER_IMAGE_NAME
+    networks:
+      - nginx_net
+  backend:
+    container_name: backend
+    image: $WERF_BACKEND_DOCKER_IMAGE_NAME
+    networks:
+      - nginx_net
+      - backend_net
+    environment:
+      - GIN_MODE=release
+      - DB_TYPE=mysql
+      - DB_NAME=habr-app
+      - DB_USER=root
+      - DB_PASSWD=password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+    depends_on:
+      mysql:
+        condition: service_started
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=habr-app
+    networks:
+      - backend_net
+    volumes:
+      - ./mysql:/var/lib/mysql
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    networks:
+      - nginx_net
+    volumes:
+      - ./.configs/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+networks:
+  nginx_net:
+    external: false
+  backend_net:
+    external: false
