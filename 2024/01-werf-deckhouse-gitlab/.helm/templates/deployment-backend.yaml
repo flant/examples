@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habr-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habr-app-backend
+  template:
+    metadata:
+      labels:
+        app: habr-app-backend
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: app-backend
+        image: {{ .Values.werf.image.backend }}
+        ports:
+        - containerPort: 8080
+        env:
+          - name: GIN_MODE
+            value: "release"
+          - name: DB_TYPE
+            value: "mysql"
+          - name: DB_NAME
+            value: "habr-app"
+          - name: DB_USER
+            value: "root"
+          - name: DB_PASSWD
+            value: "password"
+          - name: DB_HOST
+            value: "mysql"
+          - name: DB_PORT
+            value: "3306"

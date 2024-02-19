@@ -1,0 +1,9 @@
+apiVersion: deckhouse.io/v1
+kind: GrafanaAdditionalDatasource
+metadata:
+  name: iptnetflow
+spec:
+  access: Proxy
+  jsonData:
+    url: http://{{ .Chart.Name }}-nodegraph.{{ .Release.Namespace }}.svc.cluster.local:5000
+  type: hamedkarbasi93-nodegraphapi-datasource

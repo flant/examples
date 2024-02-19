@@ -1,0 +1,18 @@
+---
+apiVersion: deckhouse.io/v1alpha1
+kind: GrafanaDashboardDefinition
+metadata:
+  name: iptnetflow
+spec:
+  folder: Applications
+  definition: |
+{{ .Files.Get "dashboards/iptnetflow.json" | nindent 4 }}
+---
+apiVersion: deckhouse.io/v1alpha1
+kind: GrafanaDashboardDefinition
+metadata:
+  name: nodegraph
+spec:
+  folder: Applications
+  definition: |
+{{ .Files.Get "dashboards/nodegraph.json" | nindent 4 }}

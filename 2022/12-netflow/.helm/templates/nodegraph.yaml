@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-nodegraph
+  labels:
+    app: {{ .Chart.Name }}-nodegraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-nodegraph
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-nodegraph
+    spec:
+      serviceAccountName: iptnetflow-sa
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: app
+        image: {{ .Values.werf.image.python }}
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        args:
+        - /app/nodegraph.py
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-nodegraph
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Chart.Name }}-nodegraph
+  ports:
+  - name: http
+    port: 5000
+
