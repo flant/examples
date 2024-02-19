@@ -17,7 +17,7 @@
     "pino": "^7.0.5",
     "pino-http": "^5.8.0",
     "readable-web-to-node-stream": "^3.0.2",
-    "sequelize": "^6.9.0",
+    "sequelize": "^6.29.0",
     "sequelize-cli": "^6.3.0"
   },
   "devDependencies": {
