@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: habr-app
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: habrapp.zhbert.ru
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: habr-app-frontend
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: habr-app-backend
+            port:
+              number: 8080
+  tls:
+    - hosts:
+        - habrapp.zhbert.ru
+      secretName: habr-app-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: habr-app
+  namespace: habr-app
+spec:
+  secretName: habr-app-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+  - habrapp.zhbert.ru

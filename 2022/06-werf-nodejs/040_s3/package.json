@@ -10,7 +10,7 @@
     "@aws-sdk/client-s3": "^3.41.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
+    "express": "~4.18.2",
     "express-async-handler": "^1.2.0",
     "express-fileupload": "^1.2.1",
     "mysql2": "^2.3.3-rc.0",

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habr-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habr-app
+  template:
+    metadata:
+      labels:
+        app: habr-app
+    spec:
+      imagePullSecrets:
+      - name: registrysecret
+      containers:
+      - name: app
+        image: {{ .Values.werf.image.app }}
+        ports:
+        - containerPort: 8080
+        env:
+          - name: GIN_MODE
+            value: "release"
+          - name: DB_TYPE
+            value: "mysql"
+          - name: DB_NAME
+            value: "habr-app"
+          - name: DB_USER
+            value: "root"
+          - name: DB_PASSWD
+            value: "password"
+          - name: DB_HOST
+            value: "mysql"
+          - name: DB_PORT
+            value: "3306"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: habr-app
+  namespace: habr-app
+spec:
+  secretName: habr-app-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+  - habrapp.example.com
