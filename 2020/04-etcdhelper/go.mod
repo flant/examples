@@ -3,7 +3,7 @@ module etcdhelper
 go 1.18
 
 require (
-	go.etcd.io/etcd v3.3.27+incompatible
+	go.etcd.io/etcd v3.4.0+incompatible
 	k8s.io/api v0.24.1
 	k8s.io/apimachinery v0.24.1
 	k8s.io/kubectl v0.24.1
