@@ -36,6 +36,15 @@ spec:
         requests:
           storage: 1Gi
 ---
+apiVersion: deckhouse.io/v1alpha1
+kind: LocalPathProvisioner
+metadata:
+  name: localpath-system
+spec:
+  nodeGroups:
+  - master
+  path: "/opt/local-path-provisioner"
+---
 apiVersion: v1
 kind: Service
 metadata:

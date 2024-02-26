@@ -1,1 +1,2 @@
-# An application for organizing a CI/CD pipeline with werf
+# habr-action-tests
+Test project for an article about GitHub Actions

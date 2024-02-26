@@ -1,9 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
   name: habr-app
 spec:
-  ingressClassName: nginx
   rules:
   - host: habrapp.zhbert.ru
     http:
