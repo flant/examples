@@ -13,7 +13,7 @@
     "express": "~4.18.2",
     "express-async-handler": "^1.2.0",
     "express-fileupload": "^1.2.1",
-    "mysql2": "^2.3.3-rc.0",
+    "mysql2": "^3.9.4",
     "pino": "^7.0.5",
     "pino-http": "^5.8.0",
     "readable-web-to-node-stream": "^3.0.2",
