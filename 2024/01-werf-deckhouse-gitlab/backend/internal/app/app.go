@@ -1,9 +1,9 @@
 package app
 
 import (
+	"app/internal/common"
+	"app/internal/controllers"
 	"github.com/gin-gonic/gin"
-	"habr_app/internal/common"
-	"habr_app/internal/controllers"
 )
 
 func Run() {

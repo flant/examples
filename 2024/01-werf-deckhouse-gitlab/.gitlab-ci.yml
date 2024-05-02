@@ -26,5 +26,5 @@ Deploy to Production:
   extends: .base_deploy
   environment:
     name: production
-    url: https://habrapp.zhbert.ru
+    url: https://app.zhbert.ru
   only: [main]

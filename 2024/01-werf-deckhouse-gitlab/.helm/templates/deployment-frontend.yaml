@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: habr-app-frontend
+  name: app-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: habr-app-frontend
+      app: app-frontend
   template:
     metadata:
       labels:
-        app: habr-app-frontend
+        app: app-frontend
     spec:
       imagePullSecrets:
       - name: registrysecret
@@ -23,10 +23,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: habr-app-frontend
+  name: app-frontend
 spec:
   selector:
-    app: habr-app-frontend
+    app: app-frontend
   ports:
     - name: http
       port: 80

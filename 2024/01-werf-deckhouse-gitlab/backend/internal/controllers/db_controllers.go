@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"app/internal/services"
 	"database/sql"
 	"github.com/gin-gonic/gin"
-	"habr_app/internal/services"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"

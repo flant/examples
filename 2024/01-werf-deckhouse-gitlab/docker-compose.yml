@@ -14,7 +14,7 @@ services:
     environment:
       - GIN_MODE=release
       - DB_TYPE=mysql
-      - DB_NAME=habr-app
+      - DB_NAME=app
       - DB_USER=root
       - DB_PASSWD=password
       - DB_HOST=mysql
@@ -27,7 +27,7 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=habr-app
+      - MYSQL_DATABASE=app
     networks:
       - backend_net
     volumes:
