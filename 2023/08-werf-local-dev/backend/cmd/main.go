@@ -1,6 +1,6 @@
 package main
 
-import "habr_app/internal/app"
+import "app/internal/app"
 
 func main() {
 	app.Run()

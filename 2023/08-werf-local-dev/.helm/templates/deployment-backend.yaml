@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: habr-app-backend
+  name: app-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: habr-app-backend
+      app: app-backend
   template:
     metadata:
       labels:
-        app: habr-app-backend
+        app: app-backend
     spec:
       imagePullSecrets:
       - name: registrysecret
@@ -25,7 +25,7 @@ spec:
           - name: DB_TYPE
             value: "mysql"
           - name: DB_NAME
-            value: "habr-app"
+            value: "app"
           - name: DB_USER
             value: "root"
           - name: DB_PASSWD

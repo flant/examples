@@ -16,4 +16,4 @@ spec:
       containers:
       - name: setup-and-migrate-db
         image: {{ .Values.werf.image.backend }}
-        command: ["/migrations/migrate",  "-database", "mysql://root:password@tcp(mysql:3306)/habr-app", "-path", "/migrations/schemes", "up"]
+        command: ["/migrations/migrate",  "-database", "mysql://root:password@tcp(mysql:3306)/app", "-path", "/migrations/schemes", "up"]

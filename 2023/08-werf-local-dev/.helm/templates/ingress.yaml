@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
-  name: habr-app
+  name: app
 spec:
   rules:
   - host: werf-guide-app.test
@@ -13,17 +13,17 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: habr-app-frontend
+            name: app-frontend
             port:
               number: 80
       - path: /api
         pathType: Prefix
         backend:
           service:
-            name: habr-app-backend
+            name: app-backend
             port:
               number: 8080
   tls:
     - hosts:
         - werf-guide-app.test
-      secretName: habr-app-tls
+      secretName: app-tls
