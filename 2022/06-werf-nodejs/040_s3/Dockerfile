@@ -1,4 +1,4 @@
-FROM node:12-alpine as builder
+FROM node:12-alpine@sha256:d4b15b3d48f42059a15bd659be60afe21762aae9d6cbea6f124440895c27db68 as builder
 WORKDIR /app
 
 # [<en>] Copy the files needed to install the application dependencies into the image.
@@ -19,7 +19,7 @@ RUN npm run build
 
 #############################################################################
 
-FROM node:12-alpine as backend
+FROM node:12-alpine@sha256:d4b15b3d48f42059a15bd659be60afe21762aae9d6cbea6f124440895c27db68 as backend
 WORKDIR /app
 
 # [<en>] Add mysqladmin to track MySQL status in migrations and startup.
@@ -50,7 +50,7 @@ COPY --from=builder /app/.sequelizerc  ./
 
 # [<en>] Add an NIGINX image with the pre-built assets.
 # [<ru>] NGINX-образ с собранными ранее ассетами.
-FROM nginx:stable-alpine as frontend
+FROM nginx:stable-alpine@sha256:d4d72ee8e6d028c5ad939454164d3645be2d38afb5c352277926a48e24abf4fa as frontend
 WORKDIR /www
 
 # [<en>] Copy the pre-built assets from the above image.

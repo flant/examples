@@ -1,6 +1,6 @@
 # Используем многоступенчатую сборку образа (multi-stage build)
 # Образ, в котором будет собираться проект
-FROM golang:1.18-alpine AS build
+FROM golang:1.18-alpine@sha256:77f25981bd57e60a510165f3be89c901aec90453fd0f1c5a45691f6cb1528807 AS build
 # Устанавливаем curl и tar.
 RUN apk add curl tar
 # Копируем исходники приложения
@@ -14,7 +14,7 @@ RUN go mod download
 RUN go build -o /goapp cmd/main.go
 
 # Образ, который будет разворачиваться в кластере.
-FROM alpine:latest
+FROM alpine:latest@sha256:0a4eaa0eecf5f8c050e5bba433f58c052be7587ee8af3e8b3910ef9ab5fbe9f5
 WORKDIR /
 # Копируем из сборочного образа исполняемый файл проекта.
 COPY --from=build /goapp /goapp

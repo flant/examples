@@ -1,4 +1,4 @@
-FROM golang:stretch as build
+FROM golang:stretch@sha256:a9718cb62e77cc03411ea11fd71f3541e508f211169dd8f8d69ba2036545cd80 as build
 WORKDIR /app
 COPY app/ ./
 RUN export GOBIN=$PWD/bin && \
@@ -10,7 +10,7 @@ RUN export GOBIN=$PWD/bin && \
     export GO111MODULE=on && \
     go build ./benchmark.go
 
-FROM httpd:2.4 as final
+FROM httpd:2.4@sha256:3f71777bcfac3df3aff5888a2d78c4104501516300b2e7ecb91ce8de2e3debc7 as final
 WORKDIR /root
 RUN apt update && \
     apt -y install vim unzip git curl && \
