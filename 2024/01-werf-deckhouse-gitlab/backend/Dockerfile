@@ -1,6 +1,6 @@
 # Используем многоступенчатую сборку образа (multi-stage build)
 # Образ, в котором будет собираться проект
-FROM golang:1.18-alpine AS build
+FROM golang:1.23-alpine@sha256:d0b31558e6b3e4cc59f6011d79905835108c919143ebecc58f35965bf79948f4 AS build
 # Устанавливаем curl и tar.
 RUN apk add curl tar
 # Копируем исходники приложения
