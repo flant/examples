@@ -10,7 +10,7 @@ RUN export GOBIN=$PWD/bin && \
     export GO111MODULE=on && \
     go build ./benchmark.go
 
-FROM nginx:1.16 as final
+FROM nginx:1.27@sha256:447a8665cc1dab95b1ca778e162215839ccbb9189104c79d7ec3a81e14577add as final
 WORKDIR /root
 RUN apt update && \
     apt -y install vim unzip git curl && \
